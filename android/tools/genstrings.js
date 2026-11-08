@@ -22,7 +22,7 @@ const S = [
   ['action_open', 'Open', 'ખોલો'],
   ['action_ok', 'OK', 'બરાબર'],
   ['action_accept', 'I understand', 'હું સમજું છું'],
-  ['search_hint', 'Search scheme number or area', 'સ્કીમ નંબર અથવા વિસ્તાર શોધો'],
+  ['search_hint', 'Scheme number or area', 'સ્કીમ નંબર અથવા વિસ્તાર'],
   ['search_results', 'Search results', 'શોધ પરિણામો'],
   ['last_updated', 'Last updated: %1$s', 'છેલ્લે અપડેટ: %1$s'],
   ['last_updated_never', 'Catalog not updated yet', 'કેટલોગ હજી અપડેટ થયું નથી'],

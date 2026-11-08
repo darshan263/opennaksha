@@ -17,7 +17,7 @@
     <string name="action_open">ખોલો</string>
     <string name="action_ok">બરાબર</string>
     <string name="action_accept">હું સમજું છું</string>
-    <string name="search_hint">સ્કીમ નંબર અથવા વિસ્તાર શોધો</string>
+    <string name="search_hint">સ્કીમ નંબર અથવા વિસ્તાર</string>
     <string name="search_results">શોધ પરિણામો</string>
     <string name="last_updated">છેલ્લે અપડેટ: %1$s</string>
     <string name="last_updated_never">કેટલોગ હજી અપડેટ થયું નથી</string>

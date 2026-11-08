@@ -32,7 +32,7 @@
     <string name="action_open">Open</string>
     <string name="action_ok">OK</string>
     <string name="action_accept">I understand</string>
-    <string name="search_hint">Search scheme number or area</string>
+    <string name="search_hint">Scheme number or area</string>
     <string name="search_results">Search results</string>
     <string name="last_updated">Last updated: %1$s</string>
     <string name="last_updated_never">Catalog not updated yet</string>
