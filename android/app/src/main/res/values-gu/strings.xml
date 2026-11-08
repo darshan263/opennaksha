@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello_title">નમસ્તે OpenNaksha</string>
+    <string name="hello_subtitle">ગુજરાતના ટાઉન પ્લાનિંગ સ્કીમના નકશા, મફત અને ઑફલાઇન.</string>
+    <string name="catalog_source">કેટલોગ સ્રોત: %1$s</string>
+    <string name="catalog_source_bundled">કેટલોગ સ્રોત: એપ સાથે સામેલ</string>
+
+    <string name="disclaimer_title">અસ્વીકરણ</string>
+    <string name="disclaimer_text">OpenNaksha એક સ્વતંત્ર એપ છે અને કોઈ પણ સરકારી સંસ્થા સાથે સંકળાયેલ નથી કે તેના દ્વારા માન્ય નથી. નકશા જાહેરમાં ઉપલબ્ધ સરકારી વેબસાઇટ્સ પરથી લેવામાં આવ્યા છે, અને દરેક નકશા સાથે તેની લિંક આપેલ છે. નકશા ફક્ત સંદર્ભ માટે છે અને કાનૂની દસ્તાવેજ નથી. નકશા ઓવરલે અંદાજિત છે અને જૂના હોઈ શકે છે. હંમેશા સંબંધિત સત્તામંડળ પાસે ચકાસણી કરો.</string>
+</resources>

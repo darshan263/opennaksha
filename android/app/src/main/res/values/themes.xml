@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window theme only; all in-app styling comes from the Compose Material 3 theme. -->
+    <style name="Theme.OpenNaksha" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <color name="ic_launcher_background">#00695C</color>
+</resources>

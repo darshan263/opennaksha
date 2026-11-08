@@ -1,0 +1,34 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+pipeline/output/
+pipeline/.http_cache/
+pipeline/.cache/
+
+# Android / Gradle
+android/.gradle/
+android/build/
+android/*/build/
+android/**/build/
+android/local.properties
+android/captures/
+android/.kotlin/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Secrets
+.env
+.env.*

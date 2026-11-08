@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">OpenNaksha</string>
+
+    <string name="hello_title">Hello OpenNaksha</string>
+    <string name="hello_subtitle">Gujarat Town Planning scheme maps, free and offline.</string>
+    <string name="catalog_source">Catalog source: %1$s</string>
+    <string name="catalog_source_bundled">Catalog source: bundled with the app</string>
+
+    <!-- PLAN.md §8. Shown on first launch (must be acknowledged) and in Settings. -->
+    <string name="disclaimer_title">Disclaimer</string>
+    <string name="disclaimer_text">OpenNaksha is an independent app and is not affiliated with or endorsed by any government entity. Maps come from publicly available government websites, linked with each map. Maps are for reference only and are not legal documents. Map overlays are approximate and may be outdated. Always verify with the concerned authority.</string>
+</resources>
