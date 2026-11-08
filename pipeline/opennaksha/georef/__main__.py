@@ -61,7 +61,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"missing {points}", file=sys.stderr)
         return 2
     try:
-        record.overlay = build_overlay(sid, pdf, points, args.catalog / "overlays", page=page)
+        record.overlay = build_overlay(
+            sid, pdf, points, args.catalog / "overlays", page=page, crop=opts.crop
+        )
     except GeorefError as e:
         print(f"georef failed: {e}", file=sys.stderr)
         return 1

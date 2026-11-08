@@ -31,6 +31,13 @@ PDF changes (the app then shows "overlay may be outdated").
      {"file_url": "<the PDF url from the catalog>", "page": 0}
      ```
      `page` counts from 0.
+   - **To keep the title block and legend off the map:** add a crop box in pixels of the
+     rendered PNG, `[left, top, right, bottom]`. You can read pixel positions in any image
+     viewer or in the QGIS Georeferencer status bar:
+     ```json
+     {"crop": [120, 280, 4900, 3480]}
+     ```
+     Place control points on the full image as usual; only the published overlay is cropped.
 
 2. **Add a basemap in QGIS.**
    - New project.

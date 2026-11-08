@@ -12,6 +12,20 @@ and village maps published by government authorities in Gujarat, India.
 
 See [`PLAN.md`](PLAN.md) for the full build plan and milestones.
 
+## Status (2026-11-08)
+
+| Milestone | State |
+|---|---|
+| 0 Setup | done; the debug APK builds |
+| 1 Source research | done, see [docs/sources.md](docs/sources.md) |
+| 2 Pipeline | done. 6 sources live: SMC, SUDA, AMC, AUDA, RUDA, VUDA (584 schemes) |
+| 3 App: catalog + viewer | built, not yet tested on a phone |
+| 4 Automatic updates | workflow and app logic built; needs the GitHub repo set up ([docs/updates.md](docs/updates.md)) |
+| 5 Georeferencing + map | tooling and map screen built; needs `.points` files made in QGIS ([docs/georeferencing.md](docs/georeferencing.md)) |
+| 6 Extras | unit converter, AnyROR link, new-version notice, report button (hidden until configured) |
+
+Decisions and deviations from the plan are logged in [docs/decisions.md](docs/decisions.md).
+
 ## Repository layout
 
 | Path | What |
@@ -48,6 +62,9 @@ cd android
 ```
 
 See PLAN.md §9 for phone setup (USB / wireless debugging).
+
+UI strings live in one English/Gujarati table in `android/tools/genstrings.js`. After editing
+it, run `node tools/genstrings.js app/src/main/res` from `android/`.
 
 ## License
 

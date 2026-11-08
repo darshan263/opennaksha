@@ -126,3 +126,16 @@ def test_render_and_build_overlay(tmp_path):
     assert (tmp_path / "overlays" / "surat-tp-1.png").exists()
     assert ov.source_sha256 and ov.points_sha256 and len(ov.corners) == 4
     assert "control points" in ov.accuracy_note
+
+
+def test_crop_offsets_corners(tmp_path):
+    pdf = tmp_path / "m.pdf"
+    tiny_pdf(pdf)
+    points = tmp_path / "surat-tp-1.points"
+    points.write_text(points_text([(0, 0), (400, 0), (0, 200), (400, 200)]), encoding="utf-8")
+    full = build_overlay("surat-tp-1", pdf, points, tmp_path / "a")
+    cropped = build_overlay("surat-tp-1", pdf, points, tmp_path / "b", crop=(100, 50, 300, 150))
+    fit = fit_affine(parse_points(points.read_text(encoding="utf-8")))
+    assert cropped.corners == image_corners(fit, 200, 100, left=100, top=50)
+    assert cropped.corners != full.corners
+    assert Image.open(tmp_path / "b" / "surat-tp-1.png").size == (200, 100)

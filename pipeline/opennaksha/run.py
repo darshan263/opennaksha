@@ -136,7 +136,9 @@ def build_overlays(
         opts = GeorefOptions.load(points)
         try:
             pdf = fetch_map_pdf(client, record, opts.file_url, cache_dir)
-            record.overlay = build_overlay(sid, pdf, points, overlays_dir, page=opts.page)
+            record.overlay = build_overlay(
+                sid, pdf, points, overlays_dir, page=opts.page, crop=opts.crop
+            )
             record.last_changed = now
             built.append(sid)
         except Exception as e:

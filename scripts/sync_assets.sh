@@ -49,3 +49,6 @@ else
   echo "No published catalog and no pipeline/output/catalog found; keeping existing assets." >&2
   echo "Run the pipeline first:  cd pipeline && uv run python -m opennaksha.run" >&2
 fi
+
+# Pipeline bookkeeping, not used by the app.
+rm -f "$DEST/status.json"

@@ -57,3 +57,6 @@ if ($base -and (Sync-Remote)) {
     Write-Warning "No published catalog and no pipeline\output\catalog found; keeping existing assets."
     Write-Warning "Run the pipeline first:  cd pipeline; uv run python -m opennaksha.run"
 }
+
+# Pipeline bookkeeping, not used by the app.
+Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $Dest 'status.json')

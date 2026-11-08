@@ -151,10 +151,14 @@ def fit_affine(pf: PointsFile) -> Fit:
     return Fit(matrix=matrix, rms_m=rms, n_points=len(pf.points))
 
 
-def image_corners(fit: Fit, width: int, height: int) -> tuple:
-    """Lon/lat of the image corners: top-left, top-right, bottom-right, bottom-left."""
+def image_corners(fit: Fit, width: int, height: int, left: int = 0, top: int = 0) -> tuple:
+    """Lon/lat of the image corners: top-left, top-right, bottom-right, bottom-left.
+
+    `left`/`top` offset a cropped image within the full rendered page.
+    """
     out = []
-    for col, row in ((0, 0), (width, 0), (width, height), (0, height)):
+    r, b = left + width, top + height
+    for col, row in ((left, top), (r, top), (r, b), (left, b)):
         x, y = fit.matrix @ np.array([col, row, 1.0])
         lon, lat = merc_to_lonlat(float(x), float(y))
         out.append((round(lon, 7), round(lat, 7)))
@@ -202,6 +206,9 @@ class GeorefOptions:
 
     page: int = 0
     file_url: str | None = None  # which map file to use if a scheme has several
+    # Optional [left, top, right, bottom] in rendered-page pixels: keep only the map area
+    # (drops title block / legend from the overlay). Control points stay in full-page pixels.
+    crop: tuple[int, int, int, int] | None = None
 
     @classmethod
     def load(cls, points_path: Path) -> GeorefOptions:
@@ -209,17 +216,32 @@ class GeorefOptions:
         if not side.exists():
             return cls()
         data = json.loads(side.read_text(encoding="utf-8"))
-        return cls(page=int(data.get("page", 0)), file_url=data.get("file_url"))
+        crop = data.get("crop")
+        if crop is not None:
+            if len(crop) != 4 or not (crop[0] < crop[2] and crop[1] < crop[3]):
+                raise GeorefError(f"{side.name}: crop must be [left, top, right, bottom]")
+            crop = tuple(int(v) for v in crop)
+        return cls(page=int(data.get("page", 0)), file_url=data.get("file_url"), crop=crop)
 
 
 def build_overlay(
-    scheme_id: str, pdf_path: Path, points_path: Path, overlays_dir: Path, page: int = 0
+    scheme_id: str,
+    pdf_path: Path,
+    points_path: Path,
+    overlays_dir: Path,
+    page: int = 0,
+    crop: tuple[int, int, int, int] | None = None,
 ) -> Overlay:
     """Render, fit and write ``overlays_dir/{scheme_id}.png``. Returns the overlay record."""
     pf = parse_points(points_path.read_text(encoding="utf-8-sig"))
     fit = fit_affine(pf)
     img = render_pdf_page(pdf_path, page)
-    corners = image_corners(fit, *img.size)
+    left = top = 0
+    if crop:
+        w, h = img.size
+        left, top = max(0, crop[0]), max(0, crop[1])
+        img = img.crop((left, top, min(w, crop[2]), min(h, crop[3])))
+    corners = image_corners(fit, *img.size, left=left, top=top)
     make_overlay_png(img, overlays_dir / f"{scheme_id}.png")
     return Overlay(
         status="done",
