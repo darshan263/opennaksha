@@ -13,6 +13,7 @@ import json
 import logging
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -182,23 +183,29 @@ def run(
     if client is None:
         client = PoliteClient(insecure_hosts=insecure)
     try:
-        for cls in classes:
-            sid = cls.source_id()
-            log.info("scraping %s", sid)
-            try:
-                items = scrape_source(
-                    cls(client),
-                    prev.schemes,
-                    now,
-                    no_download=args.no_download,
-                    warnings=report.warnings,
-                )
-                discovered.extend(items)
-                succeeded.add(sid)
-                log.info("%s: %d schemes", sid, len(items))
-            except Exception as e:
-                log.exception("%s failed", sid)
-                report.failed_sources[sid] = f"{type(e).__name__}: {e}"[:500]
+
+        def scrape(cls: type[BaseScraper]) -> list[Discovered]:
+            log.info("scraping %s", cls.source_id())
+            return scrape_source(
+                cls(client),
+                prev.schemes,
+                now,
+                no_download=args.no_download,
+                warnings=report.warnings,
+            )
+
+        # Sources run in parallel (different hosts); each host is still limited to 1 req/s.
+        with ThreadPoolExecutor(max_workers=max(1, min(8, len(classes)))) as pool:
+            futures = [(cls.source_id(), pool.submit(scrape, cls)) for cls in classes]
+            for sid, fut in futures:  # collected in registry order → deterministic output
+                try:
+                    items = fut.result()
+                    discovered.extend(items)
+                    succeeded.add(sid)
+                    log.info("%s: %d schemes", sid, len(items))
+                except Exception as e:
+                    log.error("%s failed: %s", sid, e, exc_info=True)
+                    report.failed_sources[sid] = f"{type(e).__name__}: {e}"[:500]
 
         schemes, run_changes = merge(
             prev.schemes, discovered, succeeded, list(report.failed_sources), now

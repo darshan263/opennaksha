@@ -119,6 +119,7 @@ def merge_scheme(
             name_en=d.name_en,
             name_gu=d.name_gu,
             status=d.status,
+            status_label=d.status_label,
             status_date=d.status_date,
             source_page_url=d.source_page_url,
             files=files,
@@ -130,7 +131,11 @@ def merge_scheme(
 
     if (d.name_en, d.name_gu) != (prev.name_en, prev.name_gu):
         what.add("name")
-    if (d.status, d.status_date) != (prev.status, prev.status_date):
+    if (d.status, d.status_label, d.status_date) != (
+        prev.status,
+        prev.status_label,
+        prev.status_date,
+    ):
         what.add("status")
     if prev.removed_from_source:
         # Back on the source site: treated as a status change so the app shows it.
@@ -142,6 +147,7 @@ def merge_scheme(
             "name_en": d.name_en,
             "name_gu": d.name_gu,
             "status": d.status,
+            "status_label": d.status_label,
             "status_date": d.status_date,
             "source_page_url": d.source_page_url,
             "files": files,

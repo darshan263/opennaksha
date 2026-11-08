@@ -112,12 +112,15 @@ class PoliteClient:
         return self._client
 
     def _throttle(self, host: str) -> None:
+        # Reserve the next free slot for this host under the lock, then sleep outside it so
+        # threads working on other hosts are never blocked.
         with self._lock:
-            last = self._last_request.get(host)
             now = time.monotonic()
-            if last is not None and now - last < self.min_interval:
-                self._sleep(self.min_interval - (now - last))
-            self._last_request[host] = time.monotonic()
+            last = self._last_request.get(host)
+            slot = now if last is None else max(now, last + self.min_interval)
+            self._last_request[host] = slot
+        if slot > now:
+            self._sleep(slot - now)
 
     def _allowed(self, url: str) -> bool:
         if not self.respect_robots:

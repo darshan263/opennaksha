@@ -1,26 +1,47 @@
-"""Deterministic scheme ids (PLAN.md §5)."""
+"""Deterministic scheme ids.
+
+PLAN.md §5 proposed ``{city_id}-{type}-{scheme_no}``. Milestone 1 research showed that collides:
+SMC alone has three different "TP 1" schemes (Laldarwaja, Udhna-Majura, Vesu), AMC has fifteen
+"1"s, and SMC and SUDA both have a TP 86. So the id also carries the authority and the area name:
+
+    {city_id}-{authority}-{type}-{scheme_no}[-{area}]
+
+All parts lowercase; anything that isn't a-z/0-9 becomes a dash (see docs/decisions.md).
+"""
 
 import re
+import unicodedata
 
 SCHEME_TYPES = frozenset({"TP", "DP", "LAP", "VILLAGE"})
 
-# Runs of whitespace, forward slashes and backslashes become a single dash.
-_SEPARATORS = re.compile(r"[\s/\\]+")
-_DASHES = re.compile(r"-{2,}")
+_NON_ALNUM = re.compile(r"[^a-z0-9]+")
 
 
-def make_scheme_id(city_id: str, scheme_type: str, scheme_no: str) -> str:
-    """Return ``{city_id}-{type}-{scheme_no}``, lowercase, with slashes and spaces as dashes.
+def slug(text: str) -> str:
+    """ASCII slug: 'Udhna-Majura (Part)' → 'udhna-majura-part'. Non-Latin text is dropped."""
+    ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
+    return _NON_ALNUM.sub("-", ascii_text.lower()).strip("-")
 
-    >>> make_scheme_id("surat", "TP", "57")
-    'surat-tp-57'
-    >>> make_scheme_id("ahmedabad", "TP", "12/A")
-    'ahmedabad-tp-12-a'
+
+def make_scheme_id(
+    city_id: str,
+    authority: str,
+    scheme_type: str,
+    scheme_no: str,
+    area: str | None = None,
+) -> str:
+    """
+    >>> make_scheme_id("surat", "SMC", "TP", "1", "Laldarwaja")
+    'surat-smc-tp-1-laldarwaja'
+    >>> make_scheme_id("ahmedabad", "AMC", "TP", "152/G", "Ghatlodia")
+    'ahmedabad-amc-tp-152-g-ghatlodia'
     """
     if scheme_type.upper() not in SCHEME_TYPES:
         raise ValueError(f"unknown scheme_type: {scheme_type!r}")
-    parts = [city_id, scheme_type, scheme_no]
-    if any(not p.strip() for p in parts):
-        raise ValueError("city_id, scheme_type and scheme_no must be non-empty")
-    raw = "-".join(_SEPARATORS.sub("-", p.strip()) for p in parts)
-    return _DASHES.sub("-", raw.lower()).strip("-")
+    parts = [slug(city_id), slug(authority), slug(scheme_type), slug(scheme_no)]
+    if not all(parts):
+        raise ValueError("city_id, authority, scheme_type and scheme_no must be non-empty")
+    area_slug = slug(area or "")
+    if area_slug:
+        parts.append(area_slug)
+    return "-".join(parts)

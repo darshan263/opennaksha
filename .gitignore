@@ -32,3 +32,6 @@ android/.kotlin/
 # Secrets
 .env
 .env.*
+pipeline/live/
+pipeline/*.log
+pipeline/georef_work/

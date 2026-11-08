@@ -21,7 +21,7 @@ def scheme(
     city: str = "surat",
     authority: str = "SMC",
     status: str = "preliminary",
-    name_en: str | None = "Example",
+    name_en: str | None = None,
     files: list[tuple[str, str]] | None = None,
 ) -> DiscoveredScheme:
     files = files if files is not None else [("map", f"https://example.test/tp{no}.pdf")]

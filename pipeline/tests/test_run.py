@@ -36,7 +36,7 @@ def test_run_twice_second_run_has_zero_changes(tmp_path):
     with mock_client(fake) as client:
         r1 = run(args(tmp_path, "out1"), [FakeSurat], client)
         assert r1.first_run and r1.should_commit
-        assert r1.new == ["surat-tp-1", "surat-tp-2"]
+        assert r1.new == ["surat-smc-tp-1", "surat-smc-tp-2"]
         r2 = run(args(tmp_path, "out2", "out1"), [FakeSurat], client)
     assert (r2.new, r2.changed, r2.removed_from_source) == ([], [], [])
     assert not r2.should_commit
@@ -74,7 +74,7 @@ def test_changed_file_reported(tmp_path):
         run(args(tmp_path, "a"), [FakeSurat], client)
         fake.files["https://example.test/tp1.pdf"] = b"%PDF one, revised"
         r = run(args(tmp_path, "b", "a"), [FakeSurat], client)
-    assert r.changed == [{"id": "surat-tp-1", "what": ["map_file"]}]
+    assert r.changed == [{"id": "surat-smc-tp-1", "what": ["map_file"]}]
     assert r.commit_message.endswith("0 new, 1 changed")
     changes = json.loads((tmp_path / "b/catalog/changes.json").read_text(encoding="utf-8"))
     assert len(changes["runs"]) == 2

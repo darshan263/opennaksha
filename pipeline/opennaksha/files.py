@@ -27,15 +27,20 @@ class FileState:
 def needs_download(prev: FileState | None, head: HeadInfo | None, now: datetime) -> bool:
     if prev is None or prev.sha256 is None:
         return True
-    if head is not None and head.has_validators:
-        same = (
-            (head.etag is None or head.etag == prev.etag)
-            and (head.last_modified is None or head.last_modified == prev.last_modified)
-            and (head.content_length is None or head.content_length == prev.size_bytes)
-        )
-        return not same
-    # No validators: only re-hash if it's been a while.
-    return prev.last_hashed is None or now - prev.last_hashed >= REHASH_AFTER
+    stale = prev.last_hashed is None or now - prev.last_hashed >= REHASH_AFTER
+    if head is None or not head.has_validators:
+        return stale  # no validators: only re-hash if it's been a while
+    # Compare all validators together: some servers (IIS) derive ETags from timestamps only.
+    same = (
+        (head.etag is None or head.etag == prev.etag)
+        and (head.last_modified is None or head.last_modified == prev.last_modified)
+        and (head.content_length is None or head.content_length == prev.size_bytes)
+    )
+    if not same:
+        return True
+    # Content-Length alone is weak (an edited file can keep its size): treat like no validators.
+    strong = head.etag is not None or head.last_modified is not None
+    return not strong and stale
 
 
 def check_file(

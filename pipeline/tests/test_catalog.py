@@ -28,7 +28,7 @@ def test_write_and_load_roundtrip(tmp_path):
     prev = load_previous(tmp_path)
     assert not prev.is_first_run
     assert prev.schemes == records
-    assert prev.changes.runs[0].new == ["surat-tp-10", "surat-tp-2", "surat-tp-2a"]
+    assert prev.changes.runs[0].new == ["surat-smc-tp-10", "surat-smc-tp-2", "surat-smc-tp-2a"]
 
 
 def test_missing_previous_is_first_run(tmp_path):

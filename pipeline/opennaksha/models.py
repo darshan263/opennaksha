@@ -65,6 +65,8 @@ class SchemeRecord(_Model):
     name_en: str | None = None
     name_gu: str | None = None
     status: Status = "unknown"
+    # The source site's own wording, e.g. "Submitted to Govt." (status is then "draft").
+    status_label: str | None = None
     status_date: date | None = None
     source_page_url: str
     files: list[FileEntry] = Field(default_factory=list)
@@ -159,6 +161,7 @@ class DiscoveredScheme(_Model):
     name_en: str | None = None
     name_gu: str | None = None
     status: Status = "unknown"
+    status_label: str | None = None
     status_date: date | None = None
     source_page_url: str
     files: list[DiscoveredFile] = Field(default_factory=list)
@@ -167,7 +170,9 @@ class DiscoveredScheme(_Model):
     def id(self) -> str:
         from opennaksha.ids import make_scheme_id
 
-        return make_scheme_id(self.city_id, self.scheme_type, self.scheme_no)
+        return make_scheme_id(
+            self.city_id, self.authority, self.scheme_type, self.scheme_no, self.name_en
+        )
 
 
 def source_id(city_id: str, authority: str) -> str:

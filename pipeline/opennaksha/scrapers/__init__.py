@@ -9,4 +9,11 @@ if TYPE_CHECKING:
 
 
 def all_scrapers() -> list[type[BaseScraper]]:
-    return []
+    from opennaksha.scrapers.ahmedabad_amc import AhmedabadAMC
+    from opennaksha.scrapers.ahmedabad_auda import AhmedabadAUDA
+    from opennaksha.scrapers.rajkot_ruda import RajkotRUDA
+    from opennaksha.scrapers.surat_smc import SuratSMC
+    from opennaksha.scrapers.surat_suda import SuratSUDA
+    from opennaksha.scrapers.vadodara_vuda import VadodaraVUDA
+
+    return [SuratSMC, SuratSUDA, AhmedabadAMC, AhmedabadAUDA, RajkotRUDA, VadodaraVUDA]

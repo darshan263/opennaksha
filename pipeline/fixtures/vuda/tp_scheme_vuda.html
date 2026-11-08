@@ -1,0 +1,98 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <script type="text/javascript" language="JavaScript1.2" src="stmenu.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <title>VUDA-TP Scheme Vuda</title>
+      <script type="text/javascript">
+         <!--
+         function FP_swapImg() {//v1.0
+          var doc=document,args=arguments,elm,n; doc.$imgSwaps=new Array(); for(n=2; n<args.length;
+          n+=2) { elm=FP_getObjectByID(args[n]); if(elm) { doc.$imgSwaps[doc.$imgSwaps.length]=elm;
+          elm.$src=elm.src; elm.src=args[n+1]; } }
+         }
+         
+         function FP_preloadImgs() {//v1.0
+          var d=document,a=arguments; if(!d.FP_imgs) d.FP_imgs=new Array();
+          for(var i=0; i<a.length; i++) { d.FP_imgs[i]=new Image; d.FP_imgs[i].src=a[i]; }
+         }
+         
+         function FP_getObjectByID(id,o) {//v1.0
+          var c,el,els,f,m,n; if(!o)o=document; if(o.getElementById) el=o.getElementById(id);
+          else if(o.layers) c=o.layers; else if(o.all) el=o.all[id]; if(el) return el;
+          if(o.id==id || o.name==id) return o; if(o.childNodes) c=o.childNodes; if(c)
+          for(n=0; n<c.length; n++) { el=FP_getObjectByID(id,c[n]); if(el) return el; }
+          f=o.forms; if(f) for(n=0; n<f.length; n++) { els=f[n].elements;
+          for(m=0; m<els.length; m++){ el=FP_getObjectByID(id,els[n]); if(el) return el; } }
+          return null;
+         }
+         // -->
+      </script>
+      <style type="text/css">
+         .style1 {
+         text-align: center;
+         color: #0000FF;
+         font-size: medium;
+         }
+      </style>
+      <title>VUDA - Vadodara Urban Development Authority</title>
+      <link rel="stylesheet" href="assests/css/style.css" >
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <style>          nav{         position: relative;         top: 40px;         display: block;     }      .navbar {     align-self: center;     align-content: center;     align-items: center;     text-align: center;         overflow: hidden;     background-color: #333;     font-family: Arial, Helvetica, sans-serif; }  .navbar a {     float: left;     font-size: 16px;     color: white;     text-align: center;     padding: 14px 16px;     text-decoration: none; }  .dropdown {     float: left;     overflow: hidden; }  .dropdown .dropbtn {     font-size: 16px;         border: none;     outline: none;     color: white;     padding: 14px 16px;     background-color: inherit;     font-family: inherit;     margin: 0; }  .navbar a:hover, .dropdown:hover .dropbtn {     background-color: red; }  .dropdown-content {     display: none;     position: absolute;     background-color: #f9f9f9;     min-width: 160px;     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);     z-index: 1; }  .dropdown-content a {     float: none;     color: black;     padding: 12px 16px;     text-decoration: none;     display: block;     text-align: left; }  .dropdown-content a:hover {     background-color: #ddd; }  .dropdown:hover .dropdown-content {     display: block; } </style>
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+      <style> .mySlides {display:none;} </style>
+      <link rel="stylesheet" href="assests/css/custom.css" >
+      <link rel="stylesheet" href="assests/css/custom.css" >
+   </head>
+   <body onload="FP_preloadImgs(/*url*/'button4.jpg',/*url*/'button5.jpg',/*url*/'button10.jpg',/*url*/'button11.jpg')">
+      
+   
+   <div id="header"></div>
+   
+      <div id="wrapper">
+         <table style="width:100%;">
+            <tr>
+               <td colspan="6" class="style1">
+                  <a href="tp_scheme_vuda_draft.htm"><strong>Draft</strong>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="6" class="style1">
+                  <a href="tp_scheme_vuda_sanctioned_draft.htm"><strong>Sanctioned Draft</strong>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="6" class="style1">
+                  <a href="tp_scheme_vuda_priliminary.htm"><strong>Priliminary</strong>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="6" class="style1">
+                  <a href="tp_scheme_vuda_final.htm"><strong>Final</strong>
+               </td>
+            </tr>
+            
+         </table>
+      </div>
+    <div id="footer"></div>
+   
+   
+     <script>
+        // Function to load HTML files into the placeholders
+        function loadHTML(file, elementId) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', file, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    document.getElementById(elementId).innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send();
+        }
+
+        // Load the header and footer
+        loadHTML('header.htm', 'header');
+        loadHTML('footer.htm', 'footer');
+    </script>
+
+   </body>
+</html>

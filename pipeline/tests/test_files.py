@@ -53,3 +53,10 @@ def test_no_download_mode_never_downloads():
         st = check_file(client, URL, None, T0, no_download=True)
     assert fake.gets == []
     assert st.sha256 is None and st.size_bytes == 2
+
+
+def test_content_length_only_is_weak():
+    prev = FileState(sha256="x", size_bytes=10, last_hashed=T0)
+    assert not needs_download(prev, head(cl=10), T0 + timedelta(days=29))
+    assert needs_download(prev, head(cl=10), T0 + timedelta(days=30))
+    assert needs_download(prev, head(cl=11), T0 + timedelta(days=1))
