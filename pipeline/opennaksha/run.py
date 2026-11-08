@@ -175,13 +175,14 @@ def run(
         classes = [c for c in classes if c.city_id == args.city]
         if not classes:
             report.warnings.append(f"no enabled scrapers for city {args.city!r}")
-    insecure = frozenset().union(*(c.insecure_hosts for c in classes)) if classes else frozenset()
+    insecure = frozenset().union(*(c.insecure_hosts for c in classes))
+    legacy = frozenset().union(*(c.legacy_tls_hosts for c in classes))
 
     discovered: list[Discovered] = []
     succeeded: set[str] = set()
     own_client = client is None
     if client is None:
-        client = PoliteClient(insecure_hosts=insecure)
+        client = PoliteClient(insecure_hosts=insecure, legacy_tls_hosts=legacy)
     try:
 
         def scrape(cls: type[BaseScraper]) -> list[Discovered]:

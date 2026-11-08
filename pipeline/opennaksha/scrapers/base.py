@@ -19,6 +19,8 @@ class BaseScraper(ABC):
     # Hosts with broken TLS chains (documented in docs/sources.md). Verification is skipped
     # for these hosts only.
     insecure_hosts: ClassVar[frozenset[str]] = frozenset()
+    # Hosts needing TLS legacy renegotiation (certificates still verified).
+    legacy_tls_hosts: ClassVar[frozenset[str]] = frozenset()
     enabled: ClassVar[bool] = True
 
     def __init__(self, client: PoliteClient) -> None:

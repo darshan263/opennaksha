@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
+import ssl
 import threading
 import time
 from collections.abc import Callable
@@ -32,6 +33,18 @@ RETRY_STATUSES = {429, 500, 502, 503, 504}
 
 class RobotsDisallowed(Exception):
     pass
+
+
+def _legacy_ssl_context() -> ssl.SSLContext:
+    import certifi
+
+    ctx = ssl.create_default_context(cafile=certifi.where())
+    ctx.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+    # Intermediate CA certificates that some servers fail to send (incomplete chains). Each was
+    # downloaded from the issuer URL in the server certificate and checked against certifi.
+    for pem in sorted((Path(__file__).parent / "certs").glob("*.pem")):
+        ctx.load_verify_locations(cafile=str(pem))
+    return ctx
 
 
 def user_agent() -> str:
@@ -68,6 +81,7 @@ class PoliteClient:
         backoff: float = 2.0,
         cache_dir: Path | None = None,
         insecure_hosts: frozenset[str] = frozenset(),
+        legacy_tls_hosts: frozenset[str] = frozenset(),
         transport: httpx.BaseTransport | None = None,
         sleep: Callable[[float], None] = time.sleep,
         respect_robots: bool = True,
@@ -92,6 +106,14 @@ class PoliteClient:
         self._insecure_client = (
             httpx.Client(transport=transport, verify=False, **common) if insecure_hosts else None
         )
+        # Some servers still need TLS legacy renegotiation, which OpenSSL 3 refuses by default.
+        # Certificates are still fully verified for these hosts.
+        self._legacy_hosts = legacy_tls_hosts
+        self._legacy_client = (
+            httpx.Client(transport=transport, verify=_legacy_ssl_context(), **common)
+            if legacy_tls_hosts
+            else None
+        )
 
     # ------------------------------------------------------------------ plumbing
 
@@ -99,6 +121,8 @@ class PoliteClient:
         self._client.close()
         if self._insecure_client:
             self._insecure_client.close()
+        if self._legacy_client:
+            self._legacy_client.close()
 
     def __enter__(self) -> PoliteClient:
         return self
@@ -109,6 +133,8 @@ class PoliteClient:
     def _client_for(self, host: str) -> httpx.Client:
         if self._insecure_client and host in self._insecure_hosts:
             return self._insecure_client
+        if self._legacy_client and host in self._legacy_hosts:
+            return self._legacy_client
         return self._client
 
     def _throttle(self, host: str) -> None:

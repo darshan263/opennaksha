@@ -526,3 +526,17 @@ That doesn't affect parsing. If byte-exact fixtures matter, add `pipeline/fixtur
 - Whether RMC ViewDoc tokens stay the same over days.
 - SUDA "Published TP Scheme" and "TP Scheme Intention" pages currently show no entries. Their structure when filled is unknown.
 - Older RUDA TP schemes (pre-2018) are not on RUDA's site as far as I found.
+
+## Addendum (2026-11-08, first live pipeline run)
+
+- **AMC (ahmedabadcity.gov.in) TLS:** curl on Windows (Schannel) fetched it fine. Python/OpenSSL 3
+  failed twice:
+  1. The server needs **TLS legacy renegotiation**, which OpenSSL 3 disables by default.
+  2. It sends an **incomplete chain**: the intermediate "Sectigo Public Server Authentication CA
+     OV R36" is missing.
+
+  The AMC scraper lists the host in `legacy_tls_hosts`. The PoliteClient then allows legacy
+  renegotiation and adds the bundled intermediate from `pipeline/opennaksha/certs/`, downloaded
+  from the AIA URL in the server certificate. **Certificate verification stays on.**
+- **Live results with `--no-download`:** SMC 146, SUDA 33, AMC 272, AUDA 94, RUDA 11, VUDA 28
+  schemes. A second run against the first reported zero changes.

@@ -57,6 +57,8 @@ COLUMNS = {
 class AhmedabadAMC(BaseScraper):
     city_id = "ahmedabad"
     authority = "AMC"
+    # The server needs TLS legacy renegotiation (OpenSSL 3 refuses it by default).
+    legacy_tls_hosts = frozenset({"ahmedabadcity.gov.in", "www.ahmedabadcity.gov.in"})
 
     def discover(self) -> list[DiscoveredScheme]:
         return parse_listing(self.client.get_text(LISTING_URL), LISTING_URL)
