@@ -40,9 +40,10 @@ if uv run python -c "pass" >/dev/null 2>&1; then
   uv run python -m opennaksha.run "${ARGS[@]}"
 else
   # Windows Smart App Control can block uv's venv launcher; use the base interpreter instead.
-  PY="$(uv python find 3.12)"
+  PY="$(uv python find --system 3.12)"
   SEP=":"; [[ "$OSTYPE" == msys* || "$OSTYPE" == cygwin* ]] && SEP=";"
-  PYTHONPATH="$(pwd)/.venv/Lib/site-packages${SEP}$(pwd)/.venv/lib/python3.12/site-packages${SEP}$(pwd)" \
+  HERE="$(pwd -W 2>/dev/null || pwd)"  # Windows-style path for a Windows python.exe
+  PYTHONPATH="$HERE/.venv/Lib/site-packages${SEP}$HERE/.venv/lib/python3.12/site-packages${SEP}$HERE" \
     "$PY" -m opennaksha.run "${ARGS[@]}"
 fi
 
