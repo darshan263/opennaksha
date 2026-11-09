@@ -85,3 +85,38 @@ def test_cli_without_scrapers(tmp_path, capsys):
 
     assert main(["--output", str(tmp_path / "o"), "--city", "nowhere", "--no-download"]) == 0
     assert "no enabled scrapers" in capsys.readouterr().out
+
+
+class FakeAMC(FakeSurat):
+    city_id = "ahmedabad"
+    authority = "AMC"
+    schemes = [scheme("9", city="ahmedabad", authority="AMC", files=[])]
+    fail = False
+
+    def discover(self):
+        if FakeAMC.fail:
+            raise RuntimeError("blocked")
+        return list(FakeAMC.schemes)
+
+
+def test_skipped_source_keeps_data_without_failure(tmp_path, monkeypatch):
+    fake = FakeFiles(dict(FILES))
+    FakeSurat.fail = FakeAMC.fail = False
+    with mock_client(fake) as client:
+        run(args(tmp_path, "a"), [FakeSurat, FakeAMC], client)
+        FakeAMC.fail = True  # would fail if it ran
+        monkeypatch.setenv("OPENNAKSHA_SKIP_SOURCES", "ahmedabad-amc")
+        r = run(args(tmp_path, "b", "a"), [FakeSurat, FakeAMC], client)
+        assert r.skipped_sources == ["ahmedabad-amc"]
+        assert r.failed_sources == {} and not r.should_commit
+        city = json.loads(
+            (tmp_path / "b/catalog/cities/ahmedabad.json").read_text(encoding="utf-8")
+        )
+        assert [s["id"] for s in city["schemes"]] == ["ahmedabad-amc-tp-9"]
+        assert not city["schemes"][0]["removed_from_source"]
+        # --source runs just that source; the other source's data is untouched
+        monkeypatch.delenv("OPENNAKSHA_SKIP_SOURCES")
+        FakeAMC.fail = False
+        r = run(args(tmp_path, "c", "b", "--source", "ahmedabad-amc"), [FakeSurat, FakeAMC], client)
+    assert r.succeeded_sources == ["ahmedabad-amc"]
+    assert r.scheme_count == 3

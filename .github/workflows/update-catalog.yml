@@ -47,6 +47,9 @@ jobs:
         working-directory: pipeline
         env:
           OPENNAKSHA_CONTACT: ${{ vars.OPENNAKSHA_CONTACT }}
+          # Sources that block GitHub's (non-Indian) runners. Their data is kept unchanged here
+          # and refreshed from a PC in India with scripts/publish_local.sh (docs/updates.md).
+          OPENNAKSHA_SKIP_SOURCES: ahmedabad-amc
         # Writes the run report to the job summary itself ($GITHUB_STEP_SUMMARY).
         run: uv run python -m opennaksha.run --previous ../catalog-branch --output output
 

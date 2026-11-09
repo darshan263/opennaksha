@@ -85,6 +85,17 @@ and Pages works on the free plan.
 ## Keeping things running
 
 - **Weekly:** nothing to do. Updates run on their own.
+- **Monthly: refresh Ahmedabad AMC from your PC.** AMC's server times out for GitHub's runners
+  (they are outside India), so the workflow skips AMC (`OPENNAKSHA_SKIP_SOURCES` in
+  `update-catalog.yml`) and keeps its last published data. Refresh it from a PC in India with
+  Git Bash:
+  ```bash
+  ./scripts/publish_local.sh            # scrapes AMC and pushes to the catalog branch
+  ```
+  - **Needs:** `git` and `uv`. It only touches AMC's data.
+  - **If AMC starts working from GitHub again:** remove it from `OPENNAKSHA_SKIP_SOURCES`.
+  - **Other sources:** if another source gets blocked the same way, add its id to that variable
+    and pass it to the script (`./scripts/publish_local.sh <source-id>`).
 - **When a `Source failing: …` issue appears:** a government site changed its layout. Open
   Claude Code in this folder and say *"Fix the scraper for `<source>` — see the issue."* Push the
   fix, then re-run the workflow manually.

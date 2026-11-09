@@ -43,6 +43,7 @@ class RunReport:
     removed_from_source: list[str] = field(default_factory=list)
     failed_sources: dict[str, str] = field(default_factory=dict)
     succeeded_sources: list[str] = field(default_factory=list)
+    skipped_sources: list[str] = field(default_factory=list)  # not run; data kept unchanged
     failing_sources: dict[str, int] = field(default_factory=dict)  # >= threshold, for issues
     recovered_sources: list[str] = field(default_factory=list)
     overlays_built: list[str] = field(default_factory=list)
@@ -61,6 +62,19 @@ def utcnow() -> datetime:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="opennaksha.run", description="Scrape and build the catalog.")
     p.add_argument("--city", help="run only the scrapers for this city id (e.g. surat)")
+    p.add_argument(
+        "--source",
+        action="append",
+        default=[],
+        help="run only this source id (e.g. ahmedabad-amc); repeatable",
+    )
+    p.add_argument(
+        "--skip-source",
+        action="append",
+        default=[],
+        help="don't run this source (its data is kept unchanged); repeatable. "
+        "Also read from the comma-separated env var OPENNAKSHA_SKIP_SOURCES.",
+    )
     p.add_argument("--previous", type=Path, help="folder holding the previous catalog to diff with")
     p.add_argument("--output", type=Path, default=Path("output"), help="output folder")
     p.add_argument("--no-download", action="store_true", help="metadata only, skip file hashing")
@@ -173,6 +187,14 @@ def run(
     report = RunReport(run_at=now.isoformat().replace("+00:00", "Z"), first_run=prev.is_first_run)
 
     classes = [c for c in (scrapers if scrapers is not None else all_scrapers()) if c.enabled]
+    skip = {s.strip() for s in os.environ.get("OPENNAKSHA_SKIP_SOURCES", "").split(",")}
+    skip |= set(getattr(args, "skip_source", []) or [])
+    skip.discard("")
+    only = set(getattr(args, "source", []) or [])
+    if only:
+        classes = [c for c in classes if c.source_id() in only]
+    report.skipped_sources = sorted(c.source_id() for c in classes if c.source_id() in skip)
+    classes = [c for c in classes if c.source_id() not in skip]
     if args.city:
         classes = [c for c in classes if c.city_id == args.city]
         if not classes:
@@ -291,6 +313,7 @@ def render_report(r: RunReport) -> str:
         f"| Overlays built | {len(r.overlays_built)} |",
         f"| Sources OK | {', '.join(r.succeeded_sources) or '—'} |",
         f"| Sources failed | {', '.join(r.failed_sources) or '—'} |",
+        f"| Sources skipped | {', '.join(r.skipped_sources) or '—'} |",
         f"| Published size | {r.catalog_size_bytes / 1e6:.1f} MB |",
         f"| Will commit | {'yes' if r.should_commit else 'no (nothing changed)'} |",
         "",
