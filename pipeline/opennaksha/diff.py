@@ -164,7 +164,7 @@ def merge_scheme(
 def merge(
     previous: dict[str, SchemeRecord],
     discovered: list[Discovered],
-    succeeded_sources: set[str],
+    succeeded_owners: set[str],
     failed_sources: list[str],
     now: datetime,
 ) -> tuple[dict[str, SchemeRecord], RunChanges]:
@@ -200,7 +200,7 @@ def merge(
     for sid, prev in previous.items():
         if sid in result:
             continue
-        if prev.source_id in succeeded_sources:
+        if prev.owner_key in succeeded_owners:
             if not prev.removed_from_source:
                 changes.removed_from_source.append(sid)
                 prev = prev.model_copy(

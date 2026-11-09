@@ -1,5 +1,10 @@
 package app.opennaksha.feature.catalog
 
+import app.opennaksha.core.model.SchemeTypes
+import app.opennaksha.core.ui.typeLabel
+import androidx.compose.material3.AssistChip
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -83,6 +88,8 @@ data class HomeState(
     val meta: CatalogMeta? = null,
     val previousVisitMs: Long? = null,
     val loaded: Boolean = false,
+    /** Map types present in the catalog with their counts, in SchemeTypes.ALL order. */
+    val types: List<Pair<String, Int>> = emptyList(),
 )
 
 @HiltViewModel
@@ -97,7 +104,9 @@ class HomeViewModel @Inject constructor(
     ) { cities, recent, schemes, meta, s ->
         // What's new since the last visit; on first launch, the last 7 days.
         val since = s.previousVisitMs ?: (System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7))
-        HomeState(cities, recent, newsSince(schemes, since), meta, s.previousVisitMs, loaded = true)
+        val counts = schemes.groupingBy { it.schemeType }.eachCount()
+        val types = SchemeTypes.ALL.mapNotNull { t -> counts[t]?.let { t to it } }
+        HomeState(cities, recent, newsSince(schemes, since), meta, s.previousVisitMs, loaded = true, types = types)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeState())
 
     fun refresh() = viewModelScope.launch { repo.refresh() }
@@ -191,6 +200,22 @@ fun HomeScreen(nav: NavController, vm: HomeViewModel = hiltViewModel()) {
                                     if (n.newCount > 0) Text(pluralStringResource(R.plurals.news_new, n.newCount, n.newCount, name))
                                     if (n.updatedCount > 0) Text(pluralStringResource(R.plurals.news_updated, n.updatedCount, n.updatedCount, name))
                                 }
+                            }
+                        }
+                    }
+                }
+                if (state.types.size > 1) {
+                    item { SectionTitle(stringResource(R.string.home_types)) }
+                    item {
+                        Row(
+                            Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            state.types.forEach { (type, count) ->
+                                AssistChip(
+                                    onClick = { nav.navigate(Routes.schemes(type = type)) },
+                                    label = { Text(stringResource(R.string.type_count, typeLabel(type), count)) },
+                                )
                             }
                         }
                     }

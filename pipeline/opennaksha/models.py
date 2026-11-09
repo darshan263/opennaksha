@@ -80,6 +80,10 @@ class SchemeRecord(_Model):
     def source_id(self) -> str:
         return source_id(self.city_id, self.authority)
 
+    @property
+    def owner_key(self) -> str:
+        return owner_key(self.city_id, self.authority, self.scheme_type)
+
     def current_files(self) -> list[FileEntry]:
         return [f for f in self.files if not f.superseded]
 
@@ -173,6 +177,15 @@ class DiscoveredScheme(_Model):
         return make_scheme_id(
             self.city_id, self.authority, self.scheme_type, self.scheme_no, self.name_en
         )
+
+
+def owner_key(city_id: str, authority: str, scheme_type: str) -> str:
+    """Which scraper manages a record: authority + map type, e.g. ``surat-suda:DP``.
+
+    One authority can have several scrapers (TP schemes, DP sheets, village maps). A scraper
+    that succeeds may only mark *its own* records as removed from source.
+    """
+    return f"{source_id(city_id, authority)}:{scheme_type}"
 
 
 def source_id(city_id: str, authority: str) -> str:

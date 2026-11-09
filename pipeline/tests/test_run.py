@@ -120,3 +120,37 @@ def test_skipped_source_keeps_data_without_failure(tmp_path, monkeypatch):
         r = run(args(tmp_path, "c", "b", "--source", "ahmedabad-amc"), [FakeSurat, FakeAMC], client)
     assert r.succeeded_sources == ["ahmedabad-amc"]
     assert r.scheme_count == 3
+
+
+class FakeSuratDP(BaseScraper):
+    city_id = "surat"
+    authority = "SMC"
+    scheme_types = frozenset({"DP"})
+
+    def discover(self):
+        s = scheme("2035", files=[])
+        return [s.model_copy(update={"scheme_type": "DP"})]
+
+
+def test_scrapers_of_one_authority_only_manage_their_own_types(tmp_path):
+    fake = FakeFiles(dict(FILES))
+    FakeSurat.fail = False
+    assert FakeSuratDP.source_id() == "surat-smc-dp"
+    with mock_client(fake) as client:
+        run(args(tmp_path, "a"), [FakeSurat, FakeSuratDP], client)
+        # Only the TP scraper runs: the DP record must not be marked removed.
+        r = run(args(tmp_path, "b", "a"), [FakeSurat], client)
+    assert r.removed_from_source == []
+    city = json.loads((tmp_path / "b/catalog/cities/surat.json").read_text(encoding="utf-8"))
+    dp = [s for s in city["schemes"] if s["scheme_type"] == "DP"]
+    assert len(dp) == 1 and not dp[0]["removed_from_source"]
+
+
+def test_scraper_returning_foreign_records_fails(tmp_path):
+    class Bad(FakeSurat):
+        def discover(self):
+            return [scheme("1", city="rajkot", authority="RMC")]
+
+    with mock_client(FakeFiles({})) as client:
+        r = run(args(tmp_path, "x"), [Bad], client)
+    assert "surat-smc" in r.failed_sources

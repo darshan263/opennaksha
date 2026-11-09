@@ -44,6 +44,7 @@ import app.opennaksha.core.model.SchemeSummary
 import app.opennaksha.core.model.SchemeTypes
 import app.opennaksha.core.model.Times
 import app.opennaksha.core.ui.BackButton
+import app.opennaksha.core.ui.typeLabel
 import app.opennaksha.core.ui.EmptyState
 import app.opennaksha.core.ui.SchemeRow
 import app.opennaksha.core.ui.isGujarati
@@ -95,7 +96,12 @@ class SchemeListViewModel @Inject constructor(
     settings: SettingsRepository,
 ) : ViewModel() {
     val cityId: String? = handle.get<String>("city")?.takeIf { it.isNotBlank() }
-    private val filter = MutableStateFlow(ListFilter(query = handle.get<String>("q").orEmpty()))
+    private val filter = MutableStateFlow(
+        ListFilter(
+            query = handle.get<String>("q").orEmpty(),
+            type = handle.get<String>("type")?.takeIf { it.isNotBlank() },
+        ),
+    )
 
     private val source = if (cityId != null) repo.schemesInCity(cityId) else repo.schemes
 
@@ -147,7 +153,7 @@ fun SchemeListScreen(nav: NavController, vm: SchemeListViewModel = hiltViewModel
             ChipRow {
                 FilterChip(selected = f.type == null, onClick = { vm.update { it.copy(type = null) } }, label = { Text(stringResource(R.string.filter_all_types)) })
                 SchemeTypes.ALL.forEach { t ->
-                    FilterChip(selected = f.type == t, onClick = { vm.update { it.copy(type = if (it.type == t) null else t) } }, label = { Text(t) })
+                    FilterChip(selected = f.type == t, onClick = { vm.update { it.copy(type = if (it.type == t) null else t) } }, label = { Text(typeLabel(t)) })
                 }
                 FilterChip(selected = f.sort == SortBy.NUMBER, onClick = { vm.update { it.copy(sort = SortBy.NUMBER) } }, label = { Text(stringResource(R.string.sort_number)) })
                 FilterChip(selected = f.sort == SortBy.DATE, onClick = { vm.update { it.copy(sort = SortBy.DATE) } }, label = { Text(stringResource(R.string.sort_date)) })

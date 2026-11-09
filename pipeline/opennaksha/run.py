@@ -110,6 +110,13 @@ def scrape_source(
     found = scraper.discover()
     if not found:
         raise ScraperError("no schemes found (layout changed?)")
+    for d in found:  # a scraper may only produce records it owns
+        if (d.city_id, d.authority, d.scheme_type) != (
+            scraper.city_id,
+            scraper.authority,
+            d.scheme_type if d.scheme_type in scraper.scheme_types else None,
+        ):
+            raise ScraperError(f"{d.id}: not owned by {scraper.source_id()}")
     items = []
     for d in found:
         prev = previous.get(d.id)
@@ -204,6 +211,7 @@ def run(
 
     discovered: list[Discovered] = []
     succeeded: set[str] = set()
+    owned: set[str] = set()  # owner keys of sources that succeeded
     own_client = client is None
     if client is None:
         client = PoliteClient(insecure_hosts=insecure, legacy_tls_hosts=legacy)
@@ -227,13 +235,14 @@ def run(
                     items = fut.result()
                     discovered.extend(items)
                     succeeded.add(sid)
+                    owned |= next(c for c in classes if c.source_id() == sid).owner_keys()
                     log.info("%s: %d schemes", sid, len(items))
                 except Exception as e:
                     log.error("%s failed: %s", sid, e, exc_info=True)
                     report.failed_sources[sid] = f"{type(e).__name__}: {e}"[:500]
 
         schemes, run_changes = merge(
-            prev.schemes, discovered, succeeded, list(report.failed_sources), now
+            prev.schemes, discovered, owned, list(report.failed_sources), now
         )
         if not args.no_overlays:
             report.overlays_built = build_overlays(

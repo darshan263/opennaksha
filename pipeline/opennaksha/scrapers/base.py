@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from typing import ClassVar
 
 from opennaksha.http import PoliteClient
-from opennaksha.models import DiscoveredScheme, source_id
+from opennaksha.models import DiscoveredScheme, SchemeType, owner_key, source_id
 
 
 class ScraperError(Exception):
@@ -22,13 +22,23 @@ class BaseScraper(ABC):
     # Hosts needing TLS legacy renegotiation (certificates still verified).
     legacy_tls_hosts: ClassVar[frozenset[str]] = frozenset()
     enabled: ClassVar[bool] = True
+    # Map types this scraper produces (and owns) for its authority.
+    scheme_types: ClassVar[frozenset[SchemeType]] = frozenset({"TP"})
 
     def __init__(self, client: PoliteClient) -> None:
         self.client = client
 
     @classmethod
     def source_id(cls) -> str:
-        return source_id(cls.city_id, cls.authority)
+        """e.g. ``surat-suda`` (TP scraper) or ``surat-suda-dp`` (DP scraper)."""
+        base = source_id(cls.city_id, cls.authority)
+        if cls.scheme_types == frozenset({"TP"}):
+            return base
+        return base + "-" + "-".join(sorted(t.lower() for t in cls.scheme_types))
+
+    @classmethod
+    def owner_keys(cls) -> set[str]:
+        return {owner_key(cls.city_id, cls.authority, t) for t in cls.scheme_types}
 
     @abstractmethod
     def discover(self) -> list[DiscoveredScheme]:

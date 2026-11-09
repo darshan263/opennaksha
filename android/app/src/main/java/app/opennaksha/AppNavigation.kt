@@ -57,7 +57,7 @@ import javax.inject.Inject
 
 object Routes {
     const val HOME = "home"
-    const val SCHEMES = "schemes?city={city}&q={q}"
+    const val SCHEMES = "schemes?city={city}&q={q}&type={type}"
     const val SCHEME = "scheme/{id}"
     const val VIEWER = "viewer?id={id}&url={url}"
     const val MAP = "map?focus={focus}"
@@ -67,8 +67,9 @@ object Routes {
     const val LICENSES = "licenses"
     const val CONVERTER = "converter"
 
-    fun schemes(city: String? = null, q: String? = null) =
-        "schemes?city=${Uri.encode(city.orEmpty())}&q=${Uri.encode(q.orEmpty())}"
+    fun schemes(city: String? = null, q: String? = null, type: String? = null) =
+        "schemes?city=${Uri.encode(city.orEmpty())}&q=${Uri.encode(q.orEmpty())}" +
+            "&type=${Uri.encode(type.orEmpty())}"
     fun scheme(id: String) = "scheme/${Uri.encode(id)}"
     fun viewer(id: String, url: String) = "viewer?id=${Uri.encode(id)}&url=${Uri.encode(url)}"
     fun map(focus: String? = null) = "map?focus=${Uri.encode(focus.orEmpty())}"
@@ -139,6 +140,7 @@ fun OpenNakshaRoot(vm: MainViewModel = hiltViewModel()) {
                 arguments = listOf(
                     navArgument("city") { type = NavType.StringType; defaultValue = "" },
                     navArgument("q") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("type") { type = NavType.StringType; defaultValue = "" },
                 ),
             ) { SchemeListScreen(nav) }
             composable(Routes.SCHEME, arguments = listOf(navArgument("id") { type = NavType.StringType })) {

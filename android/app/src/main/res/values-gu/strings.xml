@@ -23,6 +23,12 @@
     <string name="last_updated_never">કેટલોગ હજી અપડેટ થયું નથી</string>
     <string name="last_checked">છેલ્લે તપાસ્યું: %1$s</string>
     <string name="home_cities">શહેરો</string>
+    <string name="home_types">નકશાના પ્રકાર મુજબ જુઓ</string>
+    <string name="type_tp">નગર રચના યોજના</string>
+    <string name="type_dp">વિકાસ યોજના</string>
+    <string name="type_lap">સ્થાનિક વિસ્તાર યોજના</string>
+    <string name="type_village">ગામ નકશા</string>
+    <string name="type_count">%1$s (%2$d)</string>
     <string name="home_recent">તાજેતરમાં જોયેલ</string>
     <string name="home_tools">સાધનો</string>
     <string name="home_empty">કેટલોગમાં હજી કોઈ સ્કીમ નથી. આગામી કેટલોગ અપડેટ પછી તે દેખાશે.</string>

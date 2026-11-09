@@ -8,7 +8,7 @@ from .helpers import T0, T1, scheme
 
 
 def build(nos):
-    records, run = merge({}, [Discovered(scheme(n)) for n in nos], {"surat-smc"}, [], T0)
+    records, run = merge({}, [Discovered(scheme(n)) for n in nos], {"surat-smc:TP"}, [], T0)
     return records, run
 
 
@@ -46,7 +46,7 @@ def test_append_run_skips_empty_and_caps_length():
 
 def test_removed_schemes_not_counted_in_index():
     records, _ = build(["1", "2"])
-    records, _ = merge(records, [Discovered(scheme("1"))], {"surat-smc"}, [], T1)
+    records, _ = merge(records, [Discovered(scheme("1"))], {"surat-smc:TP"}, [], T1)
     index = write_catalog_tmp(records)
     assert index.cities[0].scheme_count == 1
 

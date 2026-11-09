@@ -50,6 +50,17 @@ fun localizedName(nameEn: String?, nameGu: String?): String? =
 @ReadOnlyComposable
 fun schemeTitle(type: String, no: String): String = stringResource(R.string.scheme_title, type, no)
 
+/** Localized name of a map type (TP / DP / LAP / VILLAGE). */
+@Composable
+@ReadOnlyComposable
+fun typeLabel(type: String): String = when (type) {
+    "TP" -> stringResource(R.string.type_tp)
+    "DP" -> stringResource(R.string.type_dp)
+    "LAP" -> stringResource(R.string.type_lap)
+    "VILLAGE" -> stringResource(R.string.type_village)
+    else -> type
+}
+
 @Composable
 @ReadOnlyComposable
 fun SchemeSummary.displayName(): String {

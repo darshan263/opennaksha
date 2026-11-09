@@ -38,6 +38,12 @@
     <string name="last_updated_never">Catalog not updated yet</string>
     <string name="last_checked">Last checked: %1$s</string>
     <string name="home_cities">Cities</string>
+    <string name="home_types">Browse by map type</string>
+    <string name="type_tp">TP schemes</string>
+    <string name="type_dp">Development plans</string>
+    <string name="type_lap">Local area plans</string>
+    <string name="type_village">Village maps</string>
+    <string name="type_count">%1$s (%2$d)</string>
     <string name="home_recent">Recently viewed</string>
     <string name="home_tools">Tools</string>
     <string name="home_empty">No schemes in the catalog yet. They will appear after the next catalog update.</string>

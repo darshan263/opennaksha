@@ -540,3 +540,376 @@ That doesn't affect parsing. If byte-exact fixtures matter, add `pipeline/fixtur
   from the AIA URL in the server certificate. **Certificate verification stays on.**
 - **Live results with `--no-download`:** SMC 146, SUDA 33, AMC 272, AUDA 94, RUDA 11, VUDA 28
   schemes. A second run against the first reported zero changes.
+
+---
+
+## Non-TP maps: DP, LAP, village (researched 2026-11-09)
+
+The rules are the same as above. Every URL, count and header below was fetched on **2026-11-09**
+with the same User-Agent, at least 1.1 s between requests to a host, and a 30 s timeout. Files were
+checked with `HEAD` only. Anything not fetched is marked **not verified**. Robots.txt was re-checked:
+sudaonline.org still only disallows `/wp-admin/`. auda.org.in, rajkotuda.com, guda.gujarat.gov.in
+and vuda.co.in have none (404). Nothing used below is disallowed.
+
+### Summary
+
+| Source | What | Listing URL | Files | JS? | Validators (HEAD) | Verdict |
+|---|---|---|---|---|---|---|
+| **SUDA** | Sanctioned DP-2035 sheets (46 + index map) | `/development-plans/dp-2035-sheet-dt-08-10-2020-corrigendum-9-11-2020/` | JPG 8400 px, 0.2–0.7 MB | No | **Content-Length only** (JPGs send no ETag/LM) | **yes** |
+| **SUDA** | DP-2035 variations (11 notifications, villages named) | `/development-plans/sanction-dp-2035-proposed-variation/` | PDF, 1.7–69 MB | No | ETag + LM + CL | **yes** |
+| **SUDA** | Old DPs: 2004 (27 sheets) and 1986 (20 sheets) | `/development-plans/development-plan-2004/`, `…-1986/` | JPG, max 1000 px (low-res) | No | CL only | **partial** (low resolution) |
+| **SUDA** | Draft DP-2035 sheet sets (2016, 2017 u/s 16, 2019 "online data") | 3 gallery pages (see 10.1 d) | JPG 3000–4800 px | No | CL only | **partial** (superseded drafts) |
+| **AUDA** | DP 1987 / 2002 / 2021 / 2022 maps, plus notifications and GDCR | `https://www.auda.org.in/RDP/` | PDF/JPG, up to **323 MB** | No | ETag + LM + CL | **yes** (4 map rows) |
+| **RUDA** | DP 1988 / 2004 / 2031 / existing 2012, plus 3 grid sets of 29 sheets | `https://rajkotuda.com/development-plans.html` (+3 grid pages) | PDF, 1–113 MB | No (HTML image map) | ETag + LM + CL | **yes** |
+| **VUDA** | **DP village maps** (2nd revised DP, 123 villages, 208 PDFs) | `https://www.vuda.co.in/dpvillagemaps.htm` | PDF 0.8–2.3 MB | No | ETag + LM + CL | **yes** |
+| **GUDA** (new host) | First Revised DP-2024: 35 sheets + key map + full plan | `https://guda.gujarat.gov.in/resources.htm` | PDF 2.5–20 MB | No | ETag + LM + CL | **yes** |
+| **SMC** | Old DP sheets A–Z (villages listed per sheet) | `/Departments/TownPlanningDevelopmentPlans` | **ZIP only** (1.6 MB sample) | No | ETag + LM + CL | **partial** (ZIP-only, the app can't show these) |
+| **VMC** | 3 city-wide map files (no DP) | `https://vmc.gov.in/TDO.aspx` | ZIP 84 MB, PDF 49 MB, PDF 4.5 MB | No | LM + CL, no ETag | **no** for DP (optional "other") |
+| **RMC** | Nothing (RMC's area is in RUDA's DP) | – | – | – | – | **no** |
+| **AMC** | Nothing found (AMC's area is in AUDA's DP) | – | – | – | – | **no** |
+| **TPVD** | No DP list or maps. 39 of 107 notification rows are DP modifications/variations | `/ecitizen/Notifications` (see §9.1) | PDF via `/FetchFile` | No | HEAD → 405 | **partial** (notifications only) |
+| **LAPs** (all of the above) | **No published Local Area Plan map found anywhere** | – | – | – | – | **no** |
+| **Village boundary / gamtal maps** | Only VUDA's DP village maps. Village *lists* (no maps) at SUDA, RUDA, AUDA. Revenue village maps are on AnyROR (link-out only) | – | – | – | – | see 10.9 |
+
+### 10.1 Surat — SUDA (sudaonline.org, WordPress)
+
+**DP index:** `https://www.sudaonline.org/development-plans/` (fixture `suda/dp_index.html`). Its `div.entry-content` has 6 links:
+- the DP-2035 sheet gallery;
+- a PDF, `wp-content/uploads/2020/11/SANCTION-MODIFICATION-DP-2035-NOTIFICATION-DT-08-10-2020-CORRIGENDUM-DT-09-11-2020.pdf` (the sanction notification);
+- `development-plan-2035/`;
+- `/rdp-2035/` (2013 workshop text and one presentation PDF, no maps);
+- `development-plan-2004/`;
+- `development-plan-1986/`.
+
+The site menu also has "Sanction DP – 2035 Proposed Variation" and "SUDA Authority Map".
+
+**a) Sanctioned DP-2035 sheets** (fixture `suda/dp2035_sheets.html`; re-fetched today, links unchanged)
+- `h1.entry-title` (Gujarati): "સુડા–મંજુર વિકાસ યોજના -૨૦૩૫ નકશા – જાહેરનામા ક્રમાંક : GH/V/157 of 2020/DVP-142018-5731-L Date-08/10/2020 તથા Corrigendum No. GH/V/173 of 2020/DVP-142018-5731-L Date – 09/11/2020."
+- **Index map:** the first `<p><a href=".../2020/11/INDAX-MAP.jpg">` in `entry-content`, before the gallery (8400×8400, 544,885 bytes).
+- **Sheets:** `div#gallery-1 dl.gallery-item` (46 items). In each item:
+  - `dt.gallery-icon > a[href]` is the full JPG, absolute: `https://www.sudaonline.org/wp-content/uploads/2020/11/<ID>.jpg`.
+  - `a[data-lbwps-caption]` and `dd.gallery-caption` give the sheet id.
+  - `data-lbwps-width/height` give the size in pixels.
+- **Sheet ids, in order:** `BASE MAP` (file `BASE-MAP.jpg`), `A`, `B`, `C`, `C1`, `D`, `D1`, `E`, `E1`, `F`, `F1`, `G`, `H`, `H1`, `I`, `J`, `J1`, `K`, `K1`, `L`, `L1`, `M`, `M1`, `N`, `N1`, `O`, `O1`, `P`, `P1`, `Q`, `Q1`, `R`, `R1`, `S`, `S1`, `T`, `T1`, `U`, `U1`, `V`, `V1`, `W`, `W1`, `X`, `Y`, `Z`.
+- **Widths:** 8400 px, except G 6300, P 8327, Q 8320 and BASE MAP 8422.
+- **HEAD:** `A.jpg` 606,148 B, `BASE-MAP.jpg` 733,786 B, `Z.jpg` 234,344 B, all `image/jpeg`. **No ETag and no Last-Modified** (PDFs on the same host send both). So change detection is Content-Length plus a periodic re-hash.
+- The page gives no village names per sheet. The index map image is the only key.
+
+**b) DP-2035 variations:** `https://www.sudaonline.org/development-plans/sanction-dp-2035-proposed-variation/` (fixture `suda/dp2035_variations.html`)
+- **Title** (Gujarati): "સુડા મંજુર વિકાસ યોજના – ૨૦૩૫ નાં સૂચિત ફેરફારો અંગેની વિગતો" ("details of proposed changes to the sanctioned DP-2035"). File names contain `us-19` or `Proposed-Variation_us-19`.
+- `div.entry-content` holds **11 groups separated by `<hr>`**. Each group has:
+  1. **Number and date:** `<p>(૧) સુડાની મંજુર વિકાસ યોજના – ૨૦૩૫ અન્વયે … તારીખ: ૦૯/૦૭/૨૦૨૪ નાં જાહેરનામાં બાબત.</p>`. The date is in **Gujarati digits** (convert ૦–૯).
+     - Group 10 has two dates ("૧૧/૦૯/૨૦૨૫ તથા ૨૬/૦૯/૨૦૨૫").
+     - Group 7 uses an ASCII "(7)".
+  2. **Villages:** `<p>મોજે : સોનારી(SMC), અબ્રામા(SMC), ખરવાસા, …</p>`. **Village names in Gujarati**, comma-separated, sometimes joined with "અને" ("and"), with `(SMC)` suffixes and an en-dash entity. **Group 8 has no મોજે line**; it covers sheets 2–22.
+  3. **Files:** a `table.table.table-bordered.table-customized`. Each row is `td` (૧)/(૨)/(૩) | label | `a.no-cache[href]` "↓ Download". Labels map to file kinds:
+
+     | Label | Meaning | Kind |
+     |---|---|---|
+     | `રાજ્ય-પત્રમાં પ્રસિદ્ધિની વિગત` | gazette publication | notification |
+     | `જાહેરનામાં ક્રમાંક: GH/V/113 of 2024/…` | notification number | notification |
+     | `જાહેરનામાંને સંલગ્ન નકશા` / `જાહેરનામાને સંલગ્ન નકશા` | maps attached to the notification | **map** |
+
+     In group 8, the map label row has **no link**. It is followed by 3 rows (`શીટ નંબર ૨ થી ૮`, `૯ થી ૧૫`, `૧૬ થી ૨૨`) that link the map PDFs.
+- **Links:** 33 in total, absolute `wp-content/uploads/YYYY/MM/…pdf` (2024/08 to 2026/03). Notification dates run from 09/07/2024 to 27/02/2026.
+- **HEAD** (all `application/pdf` with ETag + LM + CL):
+  - `2024/08/3.-Maps.pdf`: **69,354,689 B**, LM 14 Aug 2024, ETag `"42244c1-66bca79c-…;;;"`.
+  - `2025/05/3.Sheet-No-2-to-8.pdf`: 46,669,512 B.
+  - `2026/03/Dt.27-02-2026_-MAP.pdf`: 1,753,325 B.
+
+**c) DP 2004 and DP 1986** (fixtures `suda/dp2004_sheets.html`, `suda/dp1986_sheets.html`). Same `dl.gallery-item` markup.
+- **2004:** 27 items, captions `Landuse`, `A` … `Z`. Files `wp-content/uploads/2013/08/landuse.jpg`, `a.jpg` … `z.jpg` (**lowercase**).
+- **1986:** 20 items, captions `A`–`N`, `Q`, `U`, `V`, `X`, `Y`, `Z`. Files `2013/08/A.jpg` … (**uppercase**), and `Q-1986.jpg` for Q.
+- **The server is case-sensitive:** `2013/08/A.jpg` (1986) is 156,591 B and `2013/08/a.jpg` (2004) is 137,365 B. Don't lowercase URLs.
+- **Low resolution:** `data-lbwps-width` is at most 1000 px. Viewable, but barely useful as maps.
+
+**d) Draft DP-2035 sheet sets** (all `dl.gallery-item` galleries, JPG, Content-Length only)
+
+| Page | Fixture | Items | Upload folder | Width |
+|---|---|---|---|---|
+| `/development-plans/proposed-land-use-plan-submitted-us-16/` (linked from `development-plan-2035/` as "Proposed Land-use Plan Submitted U/S 16") | `suda/dp2035_proposed_us16_sheets.html` | 39 (`DP 2035` overall + `A`…`Z` with "1" suffixes) + `PROPOSAL_INDEX_MAP.jpg` | 2017/04 | 3000 |
+| `/development-plans/proposed-land-use-plans/` (only in `wp-sitemap-posts-page-1.xml`, not in the menu) | `suda/dp2035_proposed_2016_sheets.html` | 52 (`RDP 2035` + `A`, `A1` … `Z`) + `INDEX_PROPOSAL.jpg` | 2016/05 | 3000 |
+| `/online-data-dp-sheet-2035/` (title "ONLINE DATA DP SHEET 2035"; sitemap only; no text) | `suda/dp2035_online_data_sheets.html` | 46 (`INDEX-MAP`, `A`, `B`, `C`, `C-1` …) | 2019/02 | 4000–4800 |
+
+- **HEAD samples:** `2017/04/A.jpg` 540,627 B; `2016/05/A.jpg` 1,031,784 B; `2019/02/A.jpg` 597,165 B.
+- The pages **do not say** which planning stage the 2016 and 2019 sets belong to.
+- `development-plan-2035/` (fixture `suda/dp2035_page.html`) also links:
+  - "Section 13 Notifications" (`2016/05/Full-page-photo.pdf`);
+  - GDCR-2016;
+  - "DDP 2035 - Draft Report Submitted U/S 16" (10 report PDFs in 2017/03 and 2025/06; text, not maps).
+
+**e) Authority map and village list**
+- `/suda-authority-map/` (fixture `suda/authority_map.html`): one PDF, `2013/08/SUDA-AUTHORITY-9_12_2015.pdf` (105,504 B, LM 30 Dec 2015, ETag), and a 1000 px JPG.
+- `/village-list/` (fixture `suda/village_list.html`): **text only**. Village names grouped under "Taluka Chorasi :", "Taluka Kamrej :", … No maps.
+
+**Not found on SUDA:** any LAP page (none in the page or post sitemaps) and any village-wise DP sheets.
+
+### 10.2 Ahmedabad — AUDA `/RDP/`
+
+`https://www.auda.org.in/RDP/` (fixture `auda/rdp.html`; re-fetched today, links identical). Menu path: Planning → "Revised development Plan 2021".
+
+- **Header:** `span#Body_container_lblHeader` = "Revised Development Plan 2021".
+- **Table:** one `table.gridtable`. Its `thead` is `Sr. No.` | `Title` | `View Detail`.
+- **Rows:** each `tbody tr` has three cells:
+  1. `td span.name` (Sr. No.);
+  2. `td span.name` (the **title**; trim whitespace), plus an optional `img.imgnew` ("New" GIF);
+  3. `td a[href]` with the text "Click Here".
+- **Links:** absolute `http://www.auda.org.in/uploads/Assets/rdp/<file>` with raw spaces. They **301 to https**.
+
+| # | Title (from the page) | File | Kind |
+|---|---|---|---|
+| 1 | Thol Eco Sensetive Zone Gazzate - Draft | `Thol Eco Sensetive Zone Gazzate - Draft.pdf` | notification |
+| 2 | DP-Corrigendum | `DP-Corrigendum.pdf` | notification |
+| 3 | Gazette(10-06-13) | `Gazette(10-06-13).pdf` | notification |
+| 4 | Note on Revised Development Plan 2021 | `Note on Revised Development Plan 2021.pdf` | other |
+| 5 | Affordable Housing | `affordable housing.pdf` | other |
+| 6 | **AUDA REVISED DEVELOPMENT PLAN 2021 MAP** | `Basemap-36X36.jpg` (52,872,200 B, LM 17 Jul 2014) | **map** |
+| 7 | Govt Notification 04.03.2014 section 17 | `Govt Notification 04.03.2014 section 17.pdf` | notification |
+| 8 | Gujarat Nagar Rachna Adhiniyam 1976 Act under Sec..26, 27, 28 & 49 Dt.24.02.15 | href is **truncated** at the comma (`…Sec..26, 27,`) and returns **404** | broken |
+| 9 | Notication of AUDA Sanctioned Revised Development Plan | `….pdf` (5,410,350 B) | notification |
+| 10 | **AUDA REVISED DEVELOPMENT PLAN 1987 MAP** | `audadp-198702062016045328297.pdf` (19,987,993 B, LM 6 Feb 2016) | **map** |
+| 11 | **AUDA REVISED DEVELOPMENT PLAN 2002 MAP** | `audadp-200202062016045351027.pdf` (9,050,210 B) | **map** |
+| 12–16 | Final Comprehensive GDCR-2017 (+ its notification), COMMON GDCR PART1–3 | `finalcomprehensi….pdf`, `test0214….pdf` | other |
+| 17 | **AUDA REVISED DEVELOPMENT PLAN 2022 MAP** | `audareviseddevelopmentplan2022map04112022064034976.pdf` (**323,303,204 B = 323 MB**, LM 21 Mar 2022) | **map** |
+
+- **HEAD:** all files send ETag + Last-Modified + Content-Length.
+- **Size warning:** the 2022 map is **323 MB** and the 2021 base map JPG is **53 MB**. Both are too big to hash weekly or to open on a phone. Store metadata from HEAD only and show the size in the app.
+- **Other AUDA pages checked:**
+  - `/Content/development-46`: a text table of 45 draft TP schemes under preparation (no maps, no LAP files).
+  - `/LC/` (Downloads): forms and lists only.
+  - The "Village" menu item is a PDF, `uploads/Assets/projects/audavillages09232015060038738.pdf` (49,294 B, LM 23 Sep 2015). Its content (probably a village list) was **not opened**.
+
+### 10.3 Rajkot — RUDA
+
+**Main DP page:** `https://rajkotuda.com/development-plans.html` (fixture `ruda/development_plans.html`; menu Town Planning Department → Development Plans).
+
+After the explanatory text, a `ul.bullet3` has nested `<li>`s. The top-level text gives the **plan name/year**, and the nested `<a>` text gives the **file kind**:
+
+| Plan (li text) | Link text | href (relative to `https://rajkotuda.com/`) | Size / LM |
+|---|---|---|---|
+| Development Plan 1988 | (same) | `pdf/proposed-dp-1988.pdf` | **112,792,229 B**, 7 Jun 2019 |
+| Development Plans 2004 | Development Plans | `pdf/index-2004.pdf` | 5,767,407 B |
+| | Land Use | `pdf/land-use-2004.pdf` | 29,259 B (probably a table) |
+| Development Plan 2031 (an HTML comment `<!--Proposed-->` sits before the text) | Development Plans | `pdf/dp2031/dp.pdf` | 13,593,880 B, 12 Jan 2021 |
+| | Land Use | `pdf/land-use2031.pdf` | 22,778 B |
+| | Grid wise existing devlopment plan | `devlopment-plan-2031.html` | (page) |
+| Existing Development Plans 2012 | Land Use | `pdf/Existing-Land-Use-2012.pdf` | 22,298,340 B |
+| | Grid wise existing devlopment plan | `grid-wise-existing-devlopment-plan.html` | (page) |
+| | Grid wise existing land use plan | `grid-wise-existing-land-use-plan.html` | (page) |
+
+- **HEAD:** all PDFs send ETag + LM + CL (IIS).
+- **Older page:** `development-plans-download.html` (fixture `ruda/development_plans_download.html`, unchanged today) has the same 4 main PDFs in `table.tbl1`. Each row is `<td>label</td><td><a>Download</a></td>`.
+- **Correction to §8.3:** the anchors there do have labels, in the first cell: "Development Plan 1988", "Development Plans 2004", "Development Plan 2031", "Existing Development Plans 2012". The tender links on that page are inside HTML comments.
+
+**Grid sheet pages** (fixtures `ruda/dp2031_grid_sheets.html`, `ruda/existing_dp2012_grid_sheets.html`, `ruda/existing_lu2012_grid_sheets.html`)
+- Each page is `div.cont-in h1` + `<img src="images/…jpg" usemap="#Map">` + `<map name="Map">` with **29 `<area shape="rect" coords="…" href="pdf/…">`**. There is no link text.
+- The sheet id is the file stem. The `coords` give each sheet's position on the index image.
+
+| Page (h1) | Index image | Sheet hrefs | Sample HEAD |
+|---|---|---|---|
+| `devlopment-plan-2031.html` ("Grid wise existing devlopment plan") | `images/devlopment-plan-2031.jpg` (955,174 B) | `pdf/Existing-Land-use-2031-Index-Plan/01.pdf` … `29.pdf` | 01: 5,077,792 B, LM 15 Jun 2016 |
+| `grid-wise-existing-devlopment-plan.html` | `images/Existing-Land-use-2012-Index-Plan.jpg` | `pdf/Existing-Land-use-2012-Index-Plan/E-01.pdf` … `E-29.pdf` | E-01: 4,191,744 B |
+| `grid-wise-existing-land-use-plan.html` ("Grid wise existing Land Use plan") | `images/Existing-Land-use-2012-Index-Plan2-2.jpg` | `pdf/development-plan-2031/1.pdf` … `29.pdf` | 1: 2,372,988 B; 29: 1,110,629 B |
+
+**Warning: the labels look swapped.**
+- The page listed under "Development Plan 2031" links to the folder `Existing-Land-use-2031-Index-Plan`.
+- The page labelled "existing land use plan" (under Existing 2012) links to the folder `development-plan-2031`.
+
+Which set is the proposed DP-2031 is **not verified** (that would need opening a PDF). The scraper should record both the page label and the folder name.
+
+**Village list:** `village-list.html` (fixture `ruda/village_list.html`)
+- An HTML table of **48 villages**: Name, Area (ha), Taluka, population 1981–2011.
+- `pdf/village-list.pdf` (47,675 B).
+- `images/village-list.jpg` (1,569,928 B). Its `title` attribute says "Organization Chart", so its content is **not verified**.
+- No village maps.
+
+### 10.4 Vadodara — VUDA DP village maps (best village source found)
+
+These pages were found through the JS menu (`stm_aix(...)` calls in `vuda/home.html`): "Maps & GDCR" → "DP Maps" (`dpmaps.htm`) and "DP Village Maps" (`dpvillagemaps.htm`).
+
+**`https://www.vuda.co.in/dpvillagemaps.htm`** (fixture `vuda/dp_village_maps.html`, 51 KB, static)
+- **Heading:** `h3.decorative-heading` "DP VILLAGE MAPS Under SECTION 17", with `span.small-text` "(2nd Revised Development Plan 18-01-2012)".
+- **Table:** one `table.styled-table` with `thead` `Sr.No` | `Name` | `Download Map`. **123 villages and 208 links**, all `.pdf`, all `a.pdf-link`.
+- **Rowspan:** a village with several sheets has **`rowspan`** on Sr.No and Name. The continuation `<tr>`s have a single `<td>` with the link. This needs the same rowspan expander as AMC.
+- **Links:** **relative, with raw spaces**: `download/DP MAPS/<FOLDER>/<file>.pdf`. Examples:
+  - `download/DP MAPS/AAMLIYARA/V95.AAMLIYARA.pdf`
+  - `download/DP MAPS/AKOTA/TP-1 .pdf` (a space before `.pdf`)
+  - `download/DP MAPS/AJOD/AJOD .pdf`
+
+  Encode spaces as `%20` (verified).
+- **Village name:** take it from the Name cell (e.g. `AAMALIYARA`). The folder spelling sometimes differs (`AAMLIYARA`), so don't use the folder.
+- **Sheet label:** the link text. Examples: `V95 AAMALIYARA`, `V144`, `ANGHADH-1`…`-4`, `TP-1`, `TP-20`, `BIL-T.P.-1`, `V29 AKOTA.pdf` (some texts include ".pdf"), `KHANPUR-ANKODIYA NO.2`.
+  - The `V<number>` prefix looks like a sheet number, but the page **does not say** what it means.
+  - Some villages have `TP-n` sheets.
+- **Multi-sheet examples:** HARNI (V102–V106), ASOJ (V292–V294), BAPOD (TP-4, V113, V114).
+- **HEAD** (all ETag + LM + CL, Apache):
+  - `AAMLIYARA/V95.AAMLIYARA.pdf`: 1,393,291 B, LM 4 Apr 2012.
+  - `AKOTA/TP-1%20.pdf`: 813,098 B.
+  - `HARNI/V102%20HARNI.1.pdf`: 1,684,877 B.
+  - `BHAYALI/BHAYALI-1.pdf`: 2,315,804 B.
+
+  All are from **April 2012** and have not changed since.
+
+**Other VUDA pages**
+- `dpmaps.htm` (fixture `vuda/dp_maps.html`): only 3 inline 500 px images, "Proposed 1980 model", "Proposed 1996 model" and "Proposed 2004 model". Not worth scraping.
+- `development.htm` (fixture `vuda/development.html`): a text history with no map files.
+  - 1st DP sanctioned 22-12-83.
+  - 1st revised DP 2011 notified 25-10-96.
+  - 2nd revised draft DP-2031 submitted u/s 16 on 21-11-2007.
+- **No VUDA DP-2031 sheet set was found**, apart from the village maps above.
+
+### 10.5 Gandhinagar — GUDA (new host)
+
+- **Base URL:** `https://guda.gujarat.gov.in/` (static `.htm`, IIS).
+  - Found through a web-search citation of `www.guda.gujarat.gov.in`. That `www.` host 301s to https and then **fails TLS** (certificate name mismatch). The bare host works.
+- **robots.txt:** 404.
+- **Home page text:** "Draft Development Plan of GUDA and General Development Construction Regulations for GUDA were sanctioned by GOG on 16-2-2004 … 39 villages … 388 sq km".
+
+**Downloads:** `https://guda.gujarat.gov.in/resources.htm` (fixture `guda/downloads.html`)
+- **DP sheets:** a `td.heading[colspan=9]` "First Revised D.P. Scheme", then rows of `h3.download_pdf > a[href="download/dpscheme/<n>.pdf"]` with link text `1` … `35` (**35 sheets**).
+- **Full plan and key map:**
+  - `<li><strong><a href="download/dpscheme/First Revised DP 2024.pdf"><h2>Final Development Plan-2024(First Revised)</h2></a>`
+  - `<a href="download/dpscheme/key map.pdf"><h2>Key Map</h2>`
+- **Filter needed:** the same `download/dpscheme/` folder also holds forms (Gujarati file names, "Final list structure expert.pdf"). Take only links whose text is a number, plus the two `h2` items.
+- **TP files:** a `td.heading` "T.P.Scheme" with `TPS-1-2` … `TPS-32`, linking to `download/tpscheme/tps-<n>.pdf` (29 links).
+- **HEAD:**
+  - `dpscheme/1.pdf`: 2,583,765 B, LM 21 Apr 2022, ETag `"095dcd57455d81:0"`.
+  - `35.pdf`: 2,499,063 B.
+  - `First%20Revised%20DP%202024.pdf`: 20,254,053 B.
+  - `key%20map.pdf`: 7,320,494 B (LM 26 Apr 2022).
+
+**Bonus TP source (outside this task, noted for later):** `https://guda.gujarat.gov.in/tpscheme.htm` (fixture `guda/tp_scheme.html`)
+- One table with columns `Sr.No.` | `Name of the T.P.Scheme` | `Area in (Hac.)` | `Draft … U/S 48(2)` | `Preliminary … U/S 65` | `Final … U/S 65` | `Remarks`.
+- Full-width section rows split it: "Final Town Planning Scheme Sanctioned by Govt.", "Preliminary …", "Draft … and T.P.O. Appointed".
+- **The date cells are links** to the stage PDF: `download/dpscheme/draft/19.pdf`, `…/preliminary/19.pdf`, `…/final/19.pdf`, `download/tpscheme/TPS-17.pdf`.
+- Name formats: `T.P.S No.19 (Raisan- Randesan- koba)`, `T.P.S. No-11 (Adalaj) PART-A`. Remarks often say "Now In GMC". About 32 schemes.
+- HEAD `download/dpscheme/final/13.pdf`: 1,129,625 B, ETag + LM.
+
+### 10.6 Surat — SMC DP (re-checked)
+
+`/Departments/TownPlanningDevelopmentPlans`: re-fetched today. The ZIP links are identical to fixture `smc/dp_sheets.html`, and the footer still says "October 08, 2019".
+
+- **Rows:** `Sheet No.` (`A`…`Z`) | `Name`. The Name cell is a comma-separated **village list** (e.g. A = "Ariyana, Ambheta, Kunkni, Sarol"; B = "Segvachhama, Malgama"), linked to `/Images/Departments/TownPlanning/<L>-<villages>.zip`.
+- The lists include villages outside SMC limits (Chalthan, Kadodra, Kamrej-taluka villages). **The page does not state the plan year.**
+- **ZIP-only**, so the app can't show these.
+- No newer SMC DP page and no LAP page were found. The Town Planning menu has Home, TP Details, Development Plans, Achievements, Future Plan, Building Statistics, … "Future Plan" has no files.
+- SMC's area is covered by SUDA's DP-2035 (the variation notifications mark SMC villages with "(SMC)").
+
+### 10.7 Vadodara — VMC, Rajkot — RMC, Ahmedabad — AMC
+
+- **VMC:** `https://vmc.gov.in/TDO.aspx` ("Town Development (B.P.)", fixture `vmc/tdo_bp.html`). One `div.pricing-feature2 ul li a` card has 3 files, none with an ETag:
+
+  | Link text | File | Size / LM |
+  |---|---|---|
+  | Town Planning Maps | `Zip/Town Planning Maps.zip` (`application/x-zip-compressed`) | 83,635,299 B, 24 Jun 2014 |
+  | TP Map - Vadodara (2015) | `pdf/VADODARA  2015 AUGUST.pdf` (two spaces) | 48,947,008 B, 3 Aug 2015 |
+  | VUDA Map | `pdf/STRU.pdf` | 4,465,815 B, 16 Jan 2015 |
+
+  These are city-wide composite maps, not a DP. VMC has no DP or LAP page.
+- **RMC:** on `https://www.rmc.gov.in/`, the only planning link is "T.P.Map" → `egov.rmc.gov.in/TPMAP` (already covered). No DP or LAP pages.
+- **AMC:** the "City Planning" menu in fixture `amc/tp_scheme_information.html` has no DP, LAP or village items. Not re-fetched.
+  - A Sept 2026 news report (deshgujarat.com, found by web search, **not verified** on the AMC site) says AMC *proposes* a LAP around Kalupur railway station. So nothing is published yet.
+
+### 10.8 Local Area Plans (LAP)
+
+**What was searched:**
+- SUDA page and post sitemaps (no LAP pages);
+- AUDA menus (`/RDP/`, `/Content/development-46`, `/LC/`);
+- SMC Town Planning menu;
+- VMC and the VUDA menu;
+- RUDA sitemap;
+- GUDA home and downloads;
+- TPVD notifications (107 rows, **0 LAP titles**);
+- web searches.
+
+**No published LAP map or LAP listing page was found at any authority.**
+
+Web results only give background: LAPs are statutory under §76A of the GTPUD Act (added in 2014), and AUDA's DP-2021 proposed the CBD for a LAP. Neither was **verified** as a published document.
+
+Verdict: **no source for scheme_type LAP right now.** Re-check yearly.
+
+### 10.9 Village maps
+
+- **VUDA DP village maps** (10.4): real village-wise DP sheets for 123 villages. The only true "village map" source.
+- **SUDA DP-2035 variations** (10.1 b): each notification names its villages (Gujarati), but the maps are per notification, not per village.
+- **SMC DP ZIPs** (10.6): village names per sheet, but ZIP-only.
+- **Village lists without maps:** SUDA `/village-list/` (text), RUDA `village-list.html` (table + PDF), AUDA "Village" PDF.
+- **Revenue village / gamtal maps:** none of these authorities publishes them. They are only on the state land-record portal AnyROR.
+  - Landing page `https://anyror.gujarat.gov.in/` verified: 200, title "-: Any RoR @ Anywhere :-".
+  - **Link-out only, not scraped** (PLAN rule). iORA and e-Dhara were not visited.
+
+### 10.10 TPVD (state)
+
+**Pages re-checked:**
+- `/Developmentplan`: explanatory text only.
+- `/ecitizen/Downloads`: 2 PreDCR `.exe` tools.
+- `/sitemap`: no DP or LAP list pages.
+- The "Mari Yojana" menu link (`mariyojana.gujarat.gov.in`) is a welfare-schemes portal, not planning.
+
+**There is no statewide list of sanctioned DPs with map files.**
+
+The only statewide signal is the notifications table (§9.1). In the 2026-11-08 fixture, 39 of 107 rows are DP items:
+- **Title patterns:** "Modification in Final Development Plan of …", "Variation in Final Development Plan of …", "Proposed Modification in Draft Revised Development Plan 2041 of …".
+- **Authorities:** SUDA, AUDA, GUDA, BAUDA, Navsari, Junagadh, Bhavnagar, Mehsana, Nadiad, Kadi, Khedbrahma, Barwala, Savarkundla, Surendranagar-Wadhwan and others.
+
+These are useful as `notification` files and change signals, not as maps.
+
+### 10.11 Catalog modelling (proposal, needs a decision)
+
+| Source | Record granularity | scheme_type | scheme_no | name_en | status / status_label | files |
+|---|---|---|---|---|---|---|
+| SUDA DP-2035 sanctioned | 1 record | DP | `2035` | `SUDA area` | `final` (or `unknown`) / "Sanctioned 08-10-2020, corrigendum 09-11-2020" | index map + base map + 45 sheets (`map`, title = sheet id); sanction PDF (`notification`) |
+| SUDA DP-2035 variations | 1 record **per notification group** (11) | DP | `2035-var-<yyyy-mm-dd>` | villages from the મોજે line (or "Sheets 2-22") | `unknown` / "Proposed variation u/s 19, notified dd-mm-yyyy" | gazette + notification (`notification`), maps (`map`) |
+| SUDA DP-2004, DP-1986 | 1 record each | DP | `2004`, `1986` | `SUDA area` | `unknown` / "Superseded DP (low-res sheets)" | sheets (`map`) |
+| SUDA draft DP-2035 sets | 1 record each, or skip | DP | `2035-draft-2016` / `2035-draft-us16-2017` / `2035-draft-2019` | `SUDA area` | `draft` / page title | sheets (`map`) |
+| AUDA | 1 record per plan year | DP | `1987`, `2002`, `2021`, `2022` | `AUDA area` | `unknown` + row title | the map row (`map`); rows 1–3, 7, 9 as `notification` on the 2021 record; GDCR rows as `other` |
+| RUDA | 1 record per plan | DP | `1988`, `2004`, `2031`, `existing-2012` | `RUDA area` | `unknown` / "Development Plan 2031" etc. | main PDF (`map`), Land Use PDF (`other`), 29 grid sheets (`map`, title "Grid sheet 01") |
+| VUDA village maps | **1 record per village** (123) | VILLAGE | `dp-2012` | village name from the Name cell | `unknown` / "DP village map u/s 17, 2nd Revised DP 18-01-2012" | 1–5 sheet PDFs (`map`, title = link text) |
+| GUDA | 1 record | DP | `2024` | `GUDA area` | `unknown` / "Final Development Plan-2024 (First Revised)" | full plan + key map + 35 sheets (`map`) |
+| SMC DP | skip, or 1 record with 26 ZIPs | DP | (year unknown) | `SMC sheets` | `unknown` | **ZIP-only**: leave out, or mark as not viewable |
+| VMC | skip, or 1 "other" record | – | – | – | – | ZIP + 2 large PDFs |
+
+**Notes**
+- The status enum has no clean value for a sanctioned DP. Mapping "sanctioned final DP" to `final` reads naturally; otherwise use `unknown` + `status_label`.
+- **Large files** should be HEAD-only, with the size shown in the app: AUDA 323 MB and 53 MB, RUDA 113 MB, SUDA variation maps up to 69 MB.
+- SUDA JPGs send Content-Length only.
+
+### 10.12 New fixtures (all fetched 2026-11-09)
+
+Paths are relative to `pipeline/fixtures/`.
+
+| Fixture | Source URL |
+|---|---|
+| `suda/dp_index.html` | https://www.sudaonline.org/development-plans/ |
+| `suda/dp2035_variations.html` | https://www.sudaonline.org/development-plans/sanction-dp-2035-proposed-variation/ |
+| `suda/dp2004_sheets.html` | https://www.sudaonline.org/development-plans/development-plan-2004/ |
+| `suda/dp1986_sheets.html` | https://www.sudaonline.org/development-plans/development-plan-1986/ |
+| `suda/dp2035_page.html` | https://www.sudaonline.org/development-plans/development-plan-2035/ |
+| `suda/dp2035_proposed_us16_sheets.html` | https://www.sudaonline.org/development-plans/proposed-land-use-plan-submitted-us-16/ |
+| `suda/dp2035_proposed_2016_sheets.html` | https://www.sudaonline.org/development-plans/proposed-land-use-plans/ |
+| `suda/dp2035_online_data_sheets.html` | https://www.sudaonline.org/online-data-dp-sheet-2035/ |
+| `suda/authority_map.html` | https://www.sudaonline.org/suda-authority-map/ |
+| `suda/village_list.html` | https://www.sudaonline.org/village-list/ |
+| `ruda/development_plans.html` | https://rajkotuda.com/development-plans.html |
+| `ruda/dp2031_grid_sheets.html` | https://rajkotuda.com/devlopment-plan-2031.html |
+| `ruda/existing_dp2012_grid_sheets.html` | https://rajkotuda.com/grid-wise-existing-devlopment-plan.html |
+| `ruda/existing_lu2012_grid_sheets.html` | https://rajkotuda.com/grid-wise-existing-land-use-plan.html |
+| `ruda/village_list.html` | https://rajkotuda.com/village-list.html |
+| `vuda/dp_village_maps.html` | https://www.vuda.co.in/dpvillagemaps.htm |
+| `vuda/dp_maps.html` | https://www.vuda.co.in/dpmaps.htm |
+| `vuda/development.html` | https://www.vuda.co.in/development.htm |
+| `guda/downloads.html` | https://guda.gujarat.gov.in/resources.htm |
+| `guda/tp_scheme.html` | https://guda.gujarat.gov.in/tpscheme.htm |
+| `guda/home.html` | https://guda.gujarat.gov.in/ |
+| `vmc/tdo_bp.html` | https://vmc.gov.in/TDO.aspx |
+
+These existing fixtures were re-checked today and are unchanged (links identical): `suda/dp2035_sheets.html`, `auda/rdp.html`, `smc/dp_sheets.html`, `ruda/development_plans_download.html`.
+
+### 10.13 Not verified
+
+- What the RUDA grid sets actually contain (their labels and folder names contradict each other).
+- What the SUDA 2016 and 2019 sheet sets are.
+- What VUDA's `V<n>` sheet labels mean.
+- Contents of the AUDA "Village" PDF and of the RUDA `images/village-list.jpg`.
+- Whether SUDA JPGs ever send ETag/Last-Modified (HEAD today: no).
+- The LAP news items (AMC's Kalupur LAP proposal; "19 LAPs returned to AUDA"), which come from web search only.
