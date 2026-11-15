@@ -563,7 +563,7 @@ and vuda.co.in have none (404). Nothing used below is disallowed.
 | **RUDA** | DP 1988 / 2004 / 2031 / existing 2012, plus 3 grid sets of 29 sheets | `https://rajkotuda.com/development-plans.html` (+3 grid pages) | PDF, 1–113 MB | No (HTML image map) | ETag + LM + CL | **yes** |
 | **VUDA** | **DP village maps** (2nd revised DP, 123 villages, 208 PDFs) | `https://www.vuda.co.in/dpvillagemaps.htm` | PDF 0.8–2.3 MB | No | ETag + LM + CL | **yes** |
 | **GUDA** (new host) | First Revised DP-2024: 35 sheets + key map + full plan | `https://guda.gujarat.gov.in/resources.htm` | PDF 2.5–20 MB | No | ETag + LM + CL | **yes** |
-| **SMC** | Old DP sheets A–Z (villages listed per sheet) | `/Departments/TownPlanningDevelopmentPlans` | **ZIP only** (1.6 MB sample) | No | ETag + LM + CL | **partial** (ZIP-only, the app can't show these) |
+| **SMC** | Old DP sheets A–Z (villages listed per sheet) | `/Departments/TownPlanningDevelopmentPlans` | ZIP holding one JPG (26 ZIPs, 53 MB in all) | No | ETag + LM + CL | **yes** since 2026-11-15 (the app unpacks the JPG; see 10.6) |
 | **VMC** | 3 city-wide map files (no DP) | `https://vmc.gov.in/TDO.aspx` | ZIP 84 MB, PDF 49 MB, PDF 4.5 MB | No | LM + CL, no ETag | **no** for DP (optional "other") |
 | **RMC** | Nothing (RMC's area is in RUDA's DP) | – | – | – | – | **no** |
 | **AMC** | Nothing found (AMC's area is in AUDA's DP) | – | – | – | – | **no** |
@@ -791,7 +791,8 @@ These pages were found through the JS menu (`stm_aix(...)` calls in `vuda/home.h
 
 - **Rows:** `Sheet No.` (`A`…`Z`) | `Name`. The Name cell is a comma-separated **village list** (e.g. A = "Ariyana, Ambheta, Kunkni, Sarol"; B = "Segvachhama, Malgama"), linked to `/Images/Departments/TownPlanning/<L>-<villages>.zip`.
 - The lists include villages outside SMC limits (Chalthan, Kadodra, Kamrej-taluka villages). **The page does not state the plan year.**
-- **ZIP-only**, so the app can't show these.
+- **ZIP contents (checked 2026-11-15, all 26):** each ZIP holds exactly one JPG named like the link (`P-Abrama,Gothan,.jpg`). Sheet P is 4000×3527 px, dated 2003-11-09 inside the ZIP, and shows survey numbers, village boundaries and zoning colours. The app unpacks the JPG after download (`ZipMaps.kt`); the catalog's sha256 is the ZIP's.
+- **Scraper:** `surat_smc_village.py`, one VILLAGE record per sheet (scheme_no = sheet letter, name_en = the village list as published, repeats dropped). Some names are cut short on SMC's page (`Oviy`, `Talodr`, `B`) and are kept as published.
 - No newer SMC DP page and no LAP page were found. The Town Planning menu has Home, TP Details, Development Plans, Achievements, Future Plan, Building Statistics, … "Future Plan" has no files.
 - SMC's area is covered by SUDA's DP-2035 (the variation notifications mark SMC villages with "(SMC)").
 
@@ -832,7 +833,8 @@ Verdict: **no source for scheme_type LAP right now.** Re-check yearly.
 
 - **VUDA DP village maps** (10.4): real village-wise DP sheets for 123 villages. The only true "village map" source.
 - **SUDA DP-2035 variations** (10.1 b): each notification names its villages (Gujarati), but the maps are per notification, not per village.
-- **SMC DP ZIPs** (10.6): village names per sheet, but ZIP-only.
+- **SMC DP sheets** (10.6): 26 village-labelled sheets for Surat, ZIP + JPG. In the catalog since 2026-11-15.
+- **Re-checked 2026-11-15 for Ahmedabad, Rajkot and Gandhinagar:** the AUDA "Village" PDF is a 7-page list (district, taluka, village name), not maps. RUDA and GUDA DP sheets are numbered grids with no village names on their pages. So no village maps there.
 - **Village lists without maps:** SUDA `/village-list/` (text), RUDA `village-list.html` (table + PDF), AUDA "Village" PDF.
 - **Revenue village / gamtal maps:** none of these authorities publishes them. They are only on the state land-record portal AnyROR.
   - Landing page `https://anyror.gujarat.gov.in/` verified: 200, title "-: Any RoR @ Anywhere :-".

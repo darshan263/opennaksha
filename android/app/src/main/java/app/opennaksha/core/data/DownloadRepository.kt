@@ -82,6 +82,7 @@ class DownloadRepository @Inject constructor(
     private suspend fun run(schemeId: String, file: FileEntry) {
         val base = sha256(file.url.toByteArray()).take(32)
         val tmp = File(dir, "$base.part")
+        val unzipped = File(dir, "$base.unzip.part")
         _states.update { it + (file.url to DownloadState.Running(0, file.sizeBytes)) }
         try {
             val digest = MessageDigest.getInstance("SHA-256")
@@ -109,11 +110,21 @@ class DownloadRepository @Inject constructor(
                     }
                 }
             }
-            val type = DocType.detect(tmp) ?: throw IOException("not a PDF or image")
+            // A ZIP is unpacked to the map inside it; the recorded sha256 stays that of the ZIP,
+            // which is what the catalog lists.
+            var content = tmp
+            var type = DocType.detect(tmp)
+            if (type == null && isZip(tmp)) {
+                currentCoroutineContext().ensureActive()
+                type = extractMapFromZip(tmp, unzipped) ?: throw IOException("the ZIP has no PDF or image inside")
+                content = unzipped
+            }
+            if (type == null) throw IOException("not a PDF or image")
             val target = File(dir, "$base.${type.name.lowercase()}")
             val previous = dao.download(file.url)?.localPath?.let(::File)
             if (target.exists() && !target.delete()) throw IOException("cannot replace old copy")
-            if (!tmp.renameTo(target)) throw IOException("cannot save file")
+            if (!content.renameTo(target)) throw IOException("cannot save file")
+            if (content != tmp) tmp.delete()
             if (previous != null && previous.absolutePath != target.absolutePath) previous.delete()
             dao.putDownload(
                 DownloadEntity(
@@ -124,9 +135,11 @@ class DownloadRepository @Inject constructor(
             _states.update { it - file.url }
         } catch (e: CancellationException) {
             tmp.delete()
+            unzipped.delete()
             throw e
         } catch (e: Exception) {
             tmp.delete()
+            unzipped.delete()
             _states.update { it + (file.url to DownloadState.Failed(e.message ?: e::class.simpleName.orEmpty())) }
         } finally {
             synchronized(jobs) { jobs.remove(file.url) }

@@ -280,10 +280,13 @@ private fun FileRow(
     }
 }
 
-/** Files the in-app viewer can show: PDFs and JPG/PNG maps (links without an extension are checked by their bytes). */
+/**
+ * Files the in-app viewer can show: PDFs and JPG/PNG maps, and ZIPs holding one (unpacked after
+ * download). Links without an extension are checked by their bytes.
+ */
 private fun String.isViewable(): Boolean {
     val path = substringBefore('?').lowercase()
-    return !Regex("""\.(zip|rar|dwg|dxf|kmz?|docx?|xlsx?|pptx?)$""").containsMatchIn(path)
+    return !Regex("""\.(rar|dwg|dxf|kmz?|docx?|xlsx?|pptx?)$""").containsMatchIn(path)
 }
 
 @Composable

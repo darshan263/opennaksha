@@ -16,6 +16,7 @@ def all_scrapers() -> list[type[BaseScraper]]:
     from opennaksha.scrapers.rajkot_ruda import RajkotRUDA
     from opennaksha.scrapers.rajkot_ruda_dp import RajkotRUDADP
     from opennaksha.scrapers.surat_smc import SuratSMC
+    from opennaksha.scrapers.surat_smc_village import SuratSMCVillage
     from opennaksha.scrapers.surat_suda import SuratSUDA
     from opennaksha.scrapers.surat_suda_dp import SuratSUDADP
     from opennaksha.scrapers.vadodara_vuda import VadodaraVUDA
@@ -37,4 +38,5 @@ def all_scrapers() -> list[type[BaseScraper]]:
         GandhinagarGUDADP,
         # Village maps
         VadodaraVUDAVillages,
+        SuratSMCVillage,
     ]
