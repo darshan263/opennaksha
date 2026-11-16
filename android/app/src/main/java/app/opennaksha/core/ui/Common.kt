@@ -48,7 +48,14 @@ fun localizedName(nameEn: String?, nameGu: String?): String? =
 
 @Composable
 @ReadOnlyComposable
-fun schemeTitle(type: String, no: String): String = stringResource(R.string.scheme_title, type, no)
+fun schemeTitle(type: String, no: String): String = when {
+    // SMC's village sheets are numbered by letter (A–Z): "Sheet A".
+    type == "VILLAGE" && SHEET_NO.matches(no) -> stringResource(R.string.sheet_title, no)
+    type == "VILLAGE" -> stringResource(R.string.village_title, no)
+    else -> stringResource(R.string.scheme_title, type, no)
+}
+
+private val SHEET_NO = Regex("""[A-Z]{1,2}\d?""")
 
 /** Localized name of a map type (TP / DP / LAP / VILLAGE). */
 @Composable

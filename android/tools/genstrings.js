@@ -34,12 +34,14 @@ const S = [
   ['type_lap', 'Local area plans', 'સ્થાનિક વિસ્તાર યોજના'],
   ['type_village', 'Village maps', 'ગામ નકશા'],
   ['type_count', '%1$s (%2$d)', '%1$s (%2$d)'],
+  ['sheet_title', 'Sheet %1$s', 'શીટ %1$s'],
+  ['village_title', 'Village map %1$s', 'ગામ નકશો %1$s'],
   ['home_recent', 'Recently viewed', 'તાજેતરમાં જોયેલ'],
   ['home_tools', 'Tools', 'સાધનો'],
   ['home_empty', 'No schemes in the catalog yet. They will appear after the next catalog update.', 'કેટલોગમાં હજી કોઈ સ્કીમ નથી. આગામી કેટલોગ અપડેટ પછી તે દેખાશે.'],
   ['whats_new_title', "What's new", 'નવું શું છે'],
   ['whats_new_empty', 'No recent changes recorded.', 'તાજેતરના કોઈ ફેરફાર નોંધાયા નથી.'],
-  ['change_new', 'New schemes', 'નવી સ્કીમ'],
+  ['change_new', 'New maps', 'નવા નકશા'],
   ['change_changed', 'Updated', 'અપડેટ થયેલ'],
   ['change_removed', 'Removed from the official website', 'સત્તાવાર વેબસાઇટ પરથી દૂર કરાયેલ'],
   ['what_map_file', 'map updated', 'નકશો અપડેટ થયો'],
@@ -151,8 +153,8 @@ const S = [
 // [name, {one, other} en, {one, other} gu]
 const P = [
   ['city_scheme_count', { one: '%d scheme', other: '%d schemes' }, { one: '%d સ્કીમ', other: '%d સ્કીમ' }],
-  ['news_new', { one: '%1$d new scheme in %2$s', other: '%1$d new schemes in %2$s' }, { one: '%2$s માં %1$d નવી સ્કીમ', other: '%2$s માં %1$d નવી સ્કીમ' }],
-  ['news_updated', { one: '%1$d scheme updated in %2$s', other: '%1$d schemes updated in %2$s' }, { one: '%2$s માં %1$d સ્કીમ અપડેટ થઈ', other: '%2$s માં %1$d સ્કીમ અપડેટ થઈ' }],
+  ['news_new', { one: '%1$d new map in %2$s', other: '%1$d new maps in %2$s' }, { one: '%2$s માં %1$d નવો નકશો', other: '%2$s માં %1$d નવા નકશા' }],
+  ['news_updated', { one: '%1$d map updated in %2$s', other: '%1$d maps updated in %2$s' }, { one: '%2$s માં %1$d નકશો અપડેટ થયો', other: '%2$s માં %1$d નકશા અપડેટ થયા' }],
 ];
 
 // Not translated (names, config).

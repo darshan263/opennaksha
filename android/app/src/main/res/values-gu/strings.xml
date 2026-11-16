@@ -29,12 +29,14 @@
     <string name="type_lap">સ્થાનિક વિસ્તાર યોજના</string>
     <string name="type_village">ગામ નકશા</string>
     <string name="type_count">%1$s (%2$d)</string>
+    <string name="sheet_title">શીટ %1$s</string>
+    <string name="village_title">ગામ નકશો %1$s</string>
     <string name="home_recent">તાજેતરમાં જોયેલ</string>
     <string name="home_tools">સાધનો</string>
     <string name="home_empty">કેટલોગમાં હજી કોઈ સ્કીમ નથી. આગામી કેટલોગ અપડેટ પછી તે દેખાશે.</string>
     <string name="whats_new_title">નવું શું છે</string>
     <string name="whats_new_empty">તાજેતરના કોઈ ફેરફાર નોંધાયા નથી.</string>
-    <string name="change_new">નવી સ્કીમ</string>
+    <string name="change_new">નવા નકશા</string>
     <string name="change_changed">અપડેટ થયેલ</string>
     <string name="change_removed">સત્તાવાર વેબસાઇટ પરથી દૂર કરાયેલ</string>
     <string name="what_map_file">નકશો અપડેટ થયો</string>
@@ -146,11 +148,11 @@
         <item quantity="other">%d સ્કીમ</item>
     </plurals>
     <plurals name="news_new">
-        <item quantity="one">%2$s માં %1$d નવી સ્કીમ</item>
-        <item quantity="other">%2$s માં %1$d નવી સ્કીમ</item>
+        <item quantity="one">%2$s માં %1$d નવો નકશો</item>
+        <item quantity="other">%2$s માં %1$d નવા નકશા</item>
     </plurals>
     <plurals name="news_updated">
-        <item quantity="one">%2$s માં %1$d સ્કીમ અપડેટ થઈ</item>
-        <item quantity="other">%2$s માં %1$d સ્કીમ અપડેટ થઈ</item>
+        <item quantity="one">%2$s માં %1$d નકશો અપડેટ થયો</item>
+        <item quantity="other">%2$s માં %1$d નકશા અપડેટ થયા</item>
     </plurals>
 </resources>
