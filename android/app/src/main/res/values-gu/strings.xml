@@ -126,6 +126,14 @@
     <string name="tools_converter">જમીન માપ રૂપાંતર</string>
     <string name="tools_anyror">AnyROR જમીન રેકર્ડ</string>
     <string name="tools_anyror_desc">ગુજરાતનું સત્તાવાર જમીન રેકર્ડ પોર્ટલ (બ્રાઉઝરમાં ખુલશે)</string>
+    <string name="tools_notices">સરકારી આયોજન જાહેરનામાં</string>
+    <string name="tools_notices_desc">રાજ્યના ટાઉન પ્લાનિંગ વિભાગના TP અને DP જાહેરનામાં</string>
+    <string name="notices_title">જાહેરનામાં</string>
+    <string name="notices_empty">હજી કોઈ જાહેરનામાં નથી. નવો ડેટા તપાસવા હોમ પર નીચે ખેંચો.</string>
+    <string name="notices_filter_all">બધા</string>
+    <string name="notices_filter_other">અન્ય</string>
+    <string name="notices_source">સ્ત્રોત: ટાઉન પ્લાનિંગ અને વેલ્યુએશન વિભાગ, ગુજરાત. PDF ખોલવા જાહેરનામા પર ટેપ કરો.</string>
+    <string name="notices_open_source">સ્ત્રોત પેજ ખોલો</string>
     <string name="converter_value">ક્ષેત્રફળ</string>
     <string name="converter_from">એકમ</string>
     <string name="converter_note">વપરાયેલ મૂલ્યો: 1 વાર = 1 ચો. યાર્ડ = 0.8361 m²; 1 ગુંઠા = 121 ચો. વાર = 101.17 m²; 1 વીઘા = 16 ગુંઠા = 17,424 ચો. ફૂટ = 1,618.74 m²; 1 એકર = 40 ગુંઠા = 4,046.86 m²; 1 હેક્ટર = 10,000 m². ગુજરાતમાં વીઘાનું માપ પ્રદેશ પ્રમાણે બદલાય છે — ઉપયોગ કરતા પહેલાં સ્થાનિક મૂલ્ય ચકાસો.</string>
@@ -150,6 +158,10 @@
     <plurals name="news_new">
         <item quantity="one">%2$s માં %1$d નવો નકશો</item>
         <item quantity="other">%2$s માં %1$d નવા નકશા</item>
+    </plurals>
+    <plurals name="notices_new_count">
+        <item quantity="one">%1$d નવું</item>
+        <item quantity="other">%1$d નવા</item>
     </plurals>
     <plurals name="news_updated">
         <item quantity="one">%2$s માં %1$d નકશો અપડેટ થયો</item>

@@ -37,6 +37,7 @@ import app.opennaksha.core.data.Settings
 import app.opennaksha.core.data.SettingsRepository
 import app.opennaksha.core.data.UpdateScheduler
 import app.opennaksha.feature.catalog.HomeScreen
+import app.opennaksha.feature.catalog.NoticesScreen
 import app.opennaksha.feature.catalog.SchemeDetailScreen
 import app.opennaksha.feature.catalog.SchemeListScreen
 import app.opennaksha.feature.catalog.WhatsNewScreen
@@ -59,9 +60,10 @@ object Routes {
     const val HOME = "home"
     const val SCHEMES = "schemes?city={city}&q={q}&type={type}"
     const val SCHEME = "scheme/{id}"
-    const val VIEWER = "viewer?id={id}&url={url}"
+    const val VIEWER = "viewer?id={id}&url={url}&title={title}"
     const val MAP = "map?focus={focus}"
     const val WHATS_NEW = "whatsnew"
+    const val NOTICES = "notices"
     const val DOWNLOADS = "downloads"
     const val SETTINGS = "settings"
     const val LICENSES = "licenses"
@@ -71,7 +73,8 @@ object Routes {
         "schemes?city=${Uri.encode(city.orEmpty())}&q=${Uri.encode(q.orEmpty())}" +
             "&type=${Uri.encode(type.orEmpty())}"
     fun scheme(id: String) = "scheme/${Uri.encode(id)}"
-    fun viewer(id: String, url: String) = "viewer?id=${Uri.encode(id)}&url=${Uri.encode(url)}"
+    fun viewer(id: String, url: String, title: String = "") =
+        "viewer?id=${Uri.encode(id)}&url=${Uri.encode(url)}&title=${Uri.encode(title)}"
     fun map(focus: String? = null) = "map?focus=${Uri.encode(focus.orEmpty())}"
 }
 
@@ -151,6 +154,7 @@ fun OpenNakshaRoot(vm: MainViewModel = hiltViewModel()) {
                 arguments = listOf(
                     navArgument("id") { type = NavType.StringType; defaultValue = "" },
                     navArgument("url") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("title") { type = NavType.StringType; defaultValue = "" },
                 ),
             ) { ViewerScreen(nav) }
             composable(
@@ -158,6 +162,7 @@ fun OpenNakshaRoot(vm: MainViewModel = hiltViewModel()) {
                 arguments = listOf(navArgument("focus") { type = NavType.StringType; defaultValue = "" }),
             ) { MapScreen(nav) }
             composable(Routes.WHATS_NEW) { WhatsNewScreen(nav) }
+            composable(Routes.NOTICES) { NoticesScreen(nav) }
             composable(Routes.DOWNLOADS) { DownloadsScreen(nav) }
             composable(Routes.SETTINGS) { SettingsScreen(nav) }
             composable(Routes.LICENSES) { LicensesScreen(nav) }

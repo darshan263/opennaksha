@@ -95,6 +95,9 @@ interface CatalogDao {
     @Query("SELECT value FROM meta WHERE `key` = :key")
     suspend fun meta(key: String): String?
 
+    @Query("SELECT value FROM meta WHERE `key` = :key")
+    fun observeMetaValue(key: String): Flow<String?>
+
     @Upsert
     suspend fun putMeta(items: List<MetaEntity>)
 

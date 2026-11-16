@@ -20,6 +20,8 @@ data class Settings(
     val wifiOnly: Boolean = true,
     /** Start of the previous app session (for "New"/"Updated" badges); null on first launch. */
     val previousVisitMs: Long? = null,
+    /** When the Notices screen was last opened (for its "New" badges); null = never. */
+    val noticesSeenMs: Long? = null,
 )
 
 /** App settings in DataStore. The UI language is stored by AppCompat (per-app locales). */
@@ -31,6 +33,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         val WIFI_ONLY = booleanPreferencesKey("wifi_only")
         val LAST_VISIT = longPreferencesKey("last_visit_ms")
         val PREVIOUS_VISIT = longPreferencesKey("previous_visit_ms")
+        val NOTICES_SEEN = longPreferencesKey("notices_seen_ms")
     }
 
     val settings: Flow<Settings> = context.dataStore.data.map { p ->
@@ -39,6 +42,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
             autoCheck = p[Keys.AUTO_CHECK] ?: true,
             wifiOnly = p[Keys.WIFI_ONLY] ?: true,
             previousVisitMs = p[Keys.PREVIOUS_VISIT],
+            noticesSeenMs = p[Keys.NOTICES_SEEN],
         )
     }
 
@@ -51,6 +55,9 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
             p[Keys.LAST_VISIT] = nowMs
         }
     }
+
+    suspend fun markNoticesSeen(nowMs: Long = System.currentTimeMillis()) =
+        context.dataStore.edit { it[Keys.NOTICES_SEEN] = nowMs }
 
     suspend fun setDisclaimerAccepted() = context.dataStore.edit { it[Keys.DISCLAIMER] = true }
     suspend fun setAutoCheck(on: Boolean) = context.dataStore.edit { it[Keys.AUTO_CHECK] = on }

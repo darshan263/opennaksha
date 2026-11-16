@@ -109,7 +109,7 @@ fun DownloadsScreen(nav: NavController, vm: DownloadsViewModel = hiltViewModel()
                 val d = row.entity
                 val running = progress[d.fileUrl] is DownloadState.Running
                 ListItem(
-                    headlineContent = { Text(row.record?.displayName() ?: d.schemeId) },
+                    headlineContent = { Text(row.record?.displayName() ?: d.title) },
                     supportingContent = {
                         Text(
                             listOfNotNull(

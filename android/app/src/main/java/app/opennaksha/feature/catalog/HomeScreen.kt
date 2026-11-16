@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.NewReleases
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BadgedBox
@@ -109,6 +110,11 @@ class HomeViewModel @Inject constructor(
         HomeState(cities, recent, newsSince(schemes, since), meta, s.previousVisitMs, loaded = true, types = types)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeState())
 
+    /** Notifications that are new since the Notices screen was last opened. */
+    val newNotices: StateFlow<Int> = combine(repo.notices, settings.settings) { notices, s ->
+        countNewNotices(notices, noticesNewSince(s.noticesSeenMs, s.previousVisitMs))
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+
     fun refresh() = viewModelScope.launch { repo.refresh() }
 }
 
@@ -117,6 +123,7 @@ class HomeViewModel @Inject constructor(
 fun HomeScreen(nav: NavController, vm: HomeViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val refreshing by vm.refreshing.collectAsStateWithLifecycle()
+    val newNotices by vm.newNotices.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var query by rememberSaveable { mutableStateOf("") }
     val gu = isGujarati()
@@ -257,6 +264,19 @@ fun HomeScreen(nav: NavController, vm: HomeViewModel = hiltViewModel()) {
                         headlineContent = { Text(stringResource(R.string.tools_converter)) },
                         leadingContent = { Icon(Icons.Filled.Calculate, contentDescription = null) },
                         modifier = Modifier.clickableRow { nav.navigate(Routes.CONVERTER) },
+                    )
+                }
+                item {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.tools_notices)) },
+                        supportingContent = { Text(stringResource(R.string.tools_notices_desc)) },
+                        leadingContent = { Icon(Icons.Filled.Gavel, contentDescription = null) },
+                        trailingContent = if (newNotices > 0) {
+                            { Text(pluralStringResource(R.plurals.notices_new_count, newNotices, newNotices), color = MaterialTheme.colorScheme.primary) }
+                        } else {
+                            null
+                        },
+                        modifier = Modifier.clickableRow { nav.navigate(Routes.NOTICES) },
                     )
                 }
                 item {

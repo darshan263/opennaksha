@@ -141,6 +141,14 @@
     <string name="tools_converter">Land unit converter</string>
     <string name="tools_anyror">AnyROR land records</string>
     <string name="tools_anyror_desc">Official Gujarat land record portal (opens in browser)</string>
+    <string name="tools_notices">Govt. planning notifications</string>
+    <string name="tools_notices_desc">TP and DP notifications from the state Town Planning department</string>
+    <string name="notices_title">Notifications</string>
+    <string name="notices_empty">No notifications yet. Pull to refresh on Home to check for new data.</string>
+    <string name="notices_filter_all">All</string>
+    <string name="notices_filter_other">Other</string>
+    <string name="notices_source">Source: Town Planning &amp; Valuation Department, Gujarat. Tap a notification to open its PDF.</string>
+    <string name="notices_open_source">Open source page</string>
     <string name="converter_value">Area</string>
     <string name="converter_from">Unit</string>
     <string name="converter_note">Values used: 1 vaar = 1 sq yard = 0.8361 m²; 1 guntha = 121 sq yards = 101.17 m²; 1 vigha = 16 guntha = 17,424 sq ft = 1,618.74 m²; 1 acre = 40 guntha = 4,046.86 m²; 1 hectare = 10,000 m². The size of a vigha (bigha) varies by region in Gujarat — confirm the local value before relying on it.</string>
@@ -165,6 +173,10 @@
     <plurals name="news_new">
         <item quantity="one">%1$d new map in %2$s</item>
         <item quantity="other">%1$d new maps in %2$s</item>
+    </plurals>
+    <plurals name="notices_new_count">
+        <item quantity="one">%1$d new</item>
+        <item quantity="other">%1$d new</item>
     </plurals>
     <plurals name="news_updated">
         <item quantity="one">%1$d map updated in %2$s</item>

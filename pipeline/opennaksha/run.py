@@ -1,7 +1,8 @@
 """CLI entry point: ``uv run python -m opennaksha.run`` (PLAN.md §6 run flow).
 
 Outputs (under ``--output``, default ``output/``):
-  catalog/index.json, catalog/cities/*.json, catalog/changes.json, catalog/status.json
+  catalog/index.json, catalog/cities/*.json, catalog/changes.json, catalog/status.json,
+  catalog/notices.json (statewide TPVD notifications)
   overlays/{scheme_id}.png   (only overlays built in this run)
   report.md, report.json     (run report; not published)
 """
@@ -25,6 +26,9 @@ from opennaksha.files import FileState, check_file
 from opennaksha.georef.overlay import GeorefOptions, build_overlay, sha256_file
 from opennaksha.http import PoliteClient
 from opennaksha.models import SchemeRecord, SourceHealth
+from opennaksha.notices import LISTING_URL as NOTICES_URL
+from opennaksha.notices import SOURCE_ID as NOTICES_SOURCE
+from opennaksha.notices import build_notices
 from opennaksha.scrapers import all_scrapers
 from opennaksha.scrapers.base import BaseScraper, ScraperError
 
@@ -47,6 +51,7 @@ class RunReport:
     failing_sources: dict[str, int] = field(default_factory=dict)  # >= threshold, for issues
     recovered_sources: list[str] = field(default_factory=list)
     overlays_built: list[str] = field(default_factory=list)
+    new_notices: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     scheme_count: int = 0
     first_run: bool = False
@@ -241,6 +246,24 @@ def run(
                     log.error("%s failed: %s", sid, e, exc_info=True)
                     report.failed_sources[sid] = f"{type(e).__name__}: {e}"[:500]
 
+        notices = prev.notices
+        # Notices are fetched on full runs, or with --source state-tpvd-notices; not with --city
+        # or when tests inject their own scrapers. A failure keeps the previous notices.json.
+        full_run = not args.city and scrapers is None
+        want_notices = (NOTICES_SOURCE in only if only else full_run) and NOTICES_SOURCE not in skip
+        if want_notices:
+            try:
+                notices, report.new_notices = build_notices(
+                    client.get_text(NOTICES_URL), prev.notices, now
+                )
+                succeeded.add(NOTICES_SOURCE)
+                log.info("%s: %d notices", NOTICES_SOURCE, len(notices.notices))
+            except Exception as e:
+                log.error("%s failed: %s", NOTICES_SOURCE, e)
+                report.failed_sources[NOTICES_SOURCE] = f"{type(e).__name__}: {e}"[:500]
+        elif NOTICES_SOURCE in skip:
+            report.skipped_sources.append(NOTICES_SOURCE)
+
         schemes, run_changes = merge(
             prev.schemes, discovered, owned, list(report.failed_sources), now
         )
@@ -281,7 +304,7 @@ def run(
     }
 
     changes = append_run(prev.changes, run_changes)
-    write_catalog(args.output, schemes, changes, status, now)
+    write_catalog(args.output, schemes, changes, status, now, notices=notices)
 
     report.new = run_changes.new
     report.changed = [c.model_dump() for c in run_changes.changed]
@@ -293,9 +316,12 @@ def run(
         or run_changes.has_data_changes
         or health_changed
         or bool(report.overlays_built)
+        or bool(report.new_notices)
+        or (notices is not None and prev.notices is None)
     )
     report.commit_message = (
         f"catalog: {now.date().isoformat()} — {len(report.new)} new, {len(report.changed)} changed"
+        + (f", {len(report.new_notices)} new notices" if report.new_notices else "")
     )
     size = folder_size(args.output / "catalog") + folder_size(args.output / "overlays")
     if args.previous:
@@ -320,6 +346,7 @@ def render_report(r: RunReport) -> str:
         f"| Changed | {len(r.changed)} |",
         f"| Removed from source | {len(r.removed_from_source)} |",
         f"| Overlays built | {len(r.overlays_built)} |",
+        f"| New notices | {len(r.new_notices)} |",
         f"| Sources OK | {', '.join(r.succeeded_sources) or '—'} |",
         f"| Sources failed | {', '.join(r.failed_sources) or '—'} |",
         f"| Sources skipped | {', '.join(r.skipped_sources) or '—'} |",

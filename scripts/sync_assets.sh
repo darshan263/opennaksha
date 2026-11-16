@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Copies the latest catalog into the Android app's assets (the offline fallback bundled in the APK).
 #
-# 1. If a catalog base URL is configured, download index.json, changes.json and every city file.
+# 1. If a catalog base URL is configured, download index.json, changes.json, notices.json
+#    and every city file.
 # 2. Otherwise (or if the download fails) copy from pipeline/output/catalog/.
 # 3. If neither is available, keep whatever is already in the assets folder.
 #
@@ -27,6 +28,7 @@ download() {
   echo "Downloading catalog from $base/catalog/ ..."
   curl -fsSL --max-time 60 -o "$tmp/index.json" "$base/catalog/index.json" || return 1
   curl -fsSL --max-time 60 -o "$tmp/changes.json" "$base/catalog/changes.json" || true
+  curl -fsSL --max-time 60 -o "$tmp/notices.json" "$base/catalog/notices.json" || rm -f "$tmp/notices.json"
   # index.json lists only city objects, so every "id" in it is a city id.
   local ids
   ids="$(grep -oE '"id"[[:space:]]*:[[:space:]]*"[^"]+"' "$tmp/index.json" | sed -E 's/.*"([^"]+)"$/\1/')"

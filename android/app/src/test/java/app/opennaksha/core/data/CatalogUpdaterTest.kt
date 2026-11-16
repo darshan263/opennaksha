@@ -134,6 +134,25 @@ class CatalogUpdaterTest {
     }
 
     @Test
+    fun noticesAreOptionalAndParsed() = runTest {
+        routes["/repo/catalog/notices.json"] = {
+            MockResponse().setBody(
+                """{"schema_version":1,"generated_at":"2026-11-15T02:00:00Z","source_page_url":"https://x.test/n",
+                "notices":[{"id":"a","date":"2026-09-28","kind":"TP","title":"T","url":"https://x.test/a.pdf",
+                "first_seen":"2026-11-15T02:00:00Z","future_field":1}]}""",
+            )
+        }
+        val store = FakeStore()
+        assertTrue(updater(store).update() is UpdateResult.Updated)
+        assertEquals("TP", store.snapshot!!.notices!!.notices.single().kind)
+
+        routes["/repo/catalog/notices.json"] = { MockResponse().setBody("{broken") }
+        val store2 = FakeStore()
+        assertTrue(updater(store2).update() is UpdateResult.Updated)
+        assertNull(store2.snapshot!!.notices)
+    }
+
+    @Test
     fun networkErrorKeepsData() = runTest {
         val store = FakeStore()
         server.shutdown()

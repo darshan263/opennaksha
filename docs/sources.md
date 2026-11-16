@@ -915,3 +915,72 @@ These existing fixtures were re-checked today and are unchanged (links identical
 - Contents of the AUDA "Village" PDF and of the RUDA `images/village-list.jpg`.
 - Whether SUDA JPGs ever send ETag/Last-Modified (HEAD today: no).
 - The LAP news items (AMC's Kalupur LAP proposal; "19 LAPs returned to AUDA"), which come from web search only.
+
+---
+
+## 11. More cities (researched 2026-11-16)
+
+These were checked after comparing OpenNaksha with two other apps' public Play Store listings: tpMap and MyEstatePoint. Those listings name the cities they cover. Only official government sites were used. Nothing was taken from either app.
+
+### 11.1 Dholera SIR — DSIRDA (scraped)
+
+- **Site and access:**
+  - `https://dholera.gujarat.gov.in`. robots.txt has no Disallow; TLS is fine.
+  - It runs on Odoo and every page is static server HTML.
+  - The home page is about 29 MB, so the scraper starts from `/finaldp/15`.
+  - One request timed out once, so the client retries.
+- **The menu lists every planning page:**
+  - "Development Plan": Final DP, DP Report 1 and 2, DP Villages Map, Split TP Schemes Map, DP Variation, Notifications.
+  - "Town Planning Schemes → Preliminary": TP 2A, 4A, 1A1, 1A2, 2B1–2B3, 3A, 3B, 4B1, 5A, 5B, 6A.
+  - "Town Planning Schemes → Draft": DTPS 1–6.
+- **Page layout:**
+  - `h3.p_heading` holds the page title.
+  - `table.document_download` has one row per PDF, with the title in `h3.p_heading_normal > span`.
+  - Links are `/web/document/download?…&id=<n>`. Each link appears twice, so the scraper drops repeats.
+- **What's missing or inconsistent:**
+  - No dates are shown, and Odoo downloads send no Last-Modified.
+  - The status is taken from the menu section. `/finalised-tp-schemes` contradicts it (its files are named "Prelim_…"), so that page is not used.
+- **Catalog:** 19 TP records, plus one DP record (`scheme_no` "final", status final), which holds 4 maps and 2 reports.
+- **Fixtures:** `dholera/<slug>_<id>.html`.
+
+### 11.2 Navsari — NMC (scraped)
+
+- **Site and access:**
+  - The old `navsaricity.in` is dead (IIS 404). The live site is `https://nmc.gujarat.gov.in`.
+  - Its robots.txt URL returns the home page, so there are no rules.
+- **Listing:**
+  - `https://nmc.gujarat.gov.in/pdf/townplaning&estate` has `table.table3` with columns No. | File Name | Download. There were 20 rows.
+  - Rows include:
+    - TP 1–4 final maps and final notifications
+    - draft notifications for TP 1–3
+    - "F Form" for TP 4
+    - DP 2039 map
+    - four NUDA notifications
+    - GDCR parts 1–3
+  - Files are PDFs at `/Home/DownloadDocument/<32 hex>?filename=Navsari_contentpdf_<ts>.pdf`.
+- **Catalog:** TP 1–4 (final) and DP 2039 (status unknown, labelled "Development Plan 2039 (Navsari)").
+- **Fixture:** `navsari/townplaning_estate.html`.
+- The state WebGIS lists NUDA "Navsari 1–4", which matches.
+
+### 11.3 Not scraped
+
+| City | Finding | Verdict |
+|---|---|---|
+| Bhavnagar | `bmcgujarat.com` robots.txt: `User-agent: * Disallow: /` (only Googlebot is allowed). BADA has no website (UDD list: "Not available"). `bhavnagar.nic.in` has no TP/DP. | **NO** — robots.txt forbids it. Needs BMC's permission, or the data typed in by hand. |
+| Bharuch (BAUDA) | `bharuch.nic.in/bauda/` is text only. **`bauda.org.in` now redirects to a casino site**, though government pages still link to it. Never link to it. | **NO** |
+| Dahej | `dahejsez.com/map/` has two SEZ plot-layout JPGs (not TP/DP). `gujaratpcpir.org` has a static list of 4 TP schemes (1, 2, 5, 14) and a DP JPG. But it is not a .gov.in domain, and no government page linking to it was found. | **PENDING** — first confirm the PCPIR site is official. |
+| GIFT City | `giftgujarat.in` has no TP/DP list. It has only a marketing master-plan PNG and the GIFT GDCR PDF. News reports say the expansion area moved to GUDA in 2024 (not verified). | **NO** |
+| Bardoli | No official BADA/BUDA site found. The Nagarpalika domain's hosting has expired. | **NO** |
+| Junagadh | `jumc.gujarat.gov.in/townplaning` has one "JUDA PLAN" PDF (4.9 MB) among regulations. No TP maps. | **PARTIAL** — one DP sheet. Could become one record later. |
+| Jamnagar | The `mcjamnagar.com` Town Planning department has 2 JPGs, "DP PLAN US 16 PART-1/2" (2016). No TP maps. | **PARTIAL** — 2 sheets of an old draft DP. |
+
+**State WebGIS** (`tpvd.openprp.in`): reachable now.
+- For each district it POSTs to `get_autho.php`, which returns a JSON list of schemes (for example, Jamnagar has 6 and Junagadh has 2).
+- Maps are WMS layers. There are no file downloads, and the licence is unclear.
+- Not used. A bad request made it show a PHP stack trace, so probing stopped there.
+
+### 11.4 Statewide notifications feed
+
+The TPVD notifications table (§9.1) is now published as `catalog/notices.json`. The app shows it on its own Notifications screen.
+- Source id: `state-tpvd-notices`. It runs on full runs and can be skipped like any other source.
+- 108 rows on 2026-11-16: 45 TP, 39 DP and 24 other, classified from the title.

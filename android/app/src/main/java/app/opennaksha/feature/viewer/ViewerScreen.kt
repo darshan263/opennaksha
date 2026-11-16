@@ -75,6 +75,8 @@ class ViewerViewModel @Inject constructor(
 ) : ViewModel() {
     val schemeId: String = handle.get<String>("id").orEmpty()
     val url: String = handle.get<String>("url").orEmpty()
+    /** Title for files that are not in a catalog record (e.g. notices). */
+    private val title: String = handle.get<String>("title").orEmpty()
     private var file: FileEntry? = null
 
     val state: StateFlow<ViewerState> = combine(downloads.downloads, downloads.states) { list, states ->
@@ -88,14 +90,14 @@ class ViewerViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repo.markViewed(schemeId)
+            if (!schemeId.startsWith("notice:")) repo.markViewed(schemeId)
             if (downloads.downloaded(url) == null) start()
         }
     }
 
     fun start() = viewModelScope.launch {
         val f = file ?: repo.schemeNow(schemeId)?.files?.firstOrNull { it.url == url }
-            ?: FileEntry(kind = "map", title = url.substringAfterLast('/'), url = url, firstSeen = "")
+            ?: FileEntry(kind = "map", title = title.ifBlank { url.substringAfterLast('/') }, url = url, firstSeen = "")
         file = f
         downloads.start(schemeId, f)
     }

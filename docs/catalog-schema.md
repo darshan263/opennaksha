@@ -10,6 +10,7 @@ Published files (compact JSON, UTF-8), relative to the catalog base URL:
 | `catalog/index.json` | `CatalogIndex` |
 | `catalog/cities/{city_id}.json` | `CityFile` (all schemes of one city, sorted) |
 | `catalog/changes.json` | `ChangesFile` (last 20 runs that had changes or failures, newest first) |
+| `catalog/notices.json` | `NoticesFile` (statewide TPVD notifications, newest first; optional) |
 | `catalog/status.json` | pipeline bookkeeping (source health), not used by the app |
 | `overlays/{scheme_id}.png` | overlay image; `overlay.url` holds this relative path |
 
@@ -426,6 +427,18 @@ Rules (PLAN.md §5):
           "title": "Status",
           "type": "string"
         },
+        "status_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status Label"
+        },
         "status_date": {
           "anyOf": [
             {
@@ -617,6 +630,135 @@ Rules (PLAN.md §5):
     }
   },
   "title": "ChangesFile",
+  "type": "object"
+}
+```
+
+## `notices.json`
+
+```json
+{
+  "$defs": {
+    "Notice": {
+      "additionalProperties": false,
+      "description": "One statewide notification (TPVD, docs/sources.md \u00a79.1). Published in notices.json.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Date"
+        },
+        "kind": {
+          "default": "other",
+          "enum": [
+            "TP",
+            "DP",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "reference_no": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference No"
+        },
+        "branch": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Branch"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "first_seen": {
+          "format": "date-time",
+          "title": "First Seen",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "url",
+        "first_seen"
+      ],
+      "title": "Notice",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "source_page_url": {
+      "title": "Source Page Url",
+      "type": "string"
+    },
+    "notices": {
+      "items": {
+        "$ref": "#/$defs/Notice"
+      },
+      "title": "Notices",
+      "type": "array"
+    }
+  },
+  "required": [
+    "generated_at",
+    "source_page_url"
+  ],
+  "title": "NoticesFile",
   "type": "object"
 }
 ```

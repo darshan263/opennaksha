@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-from opennaksha.models import SCHEMA_VERSION, CatalogIndex, ChangesFile, CityFile
+from opennaksha.models import SCHEMA_VERSION, CatalogIndex, ChangesFile, CityFile, NoticesFile
 
 DOC = Path(__file__).resolve().parents[2] / "docs" / "catalog-schema.md"
 
@@ -22,6 +22,7 @@ Published files (compact JSON, UTF-8), relative to the catalog base URL:
 | `catalog/index.json` | `CatalogIndex` |
 | `catalog/cities/{{city_id}}.json` | `CityFile` (all schemes of one city, sorted) |
 | `catalog/changes.json` | `ChangesFile` (last 20 runs that had changes or failures, newest first) |
+| `catalog/notices.json` | `NoticesFile` (statewide TPVD notifications, newest first; optional) |
 | `catalog/status.json` | pipeline bookkeeping (source health), not used by the app |
 | `overlays/{{scheme_id}}.png` | overlay image; `overlay.url` holds this relative path |
 
@@ -46,6 +47,7 @@ def render() -> str:
         ("index.json", CatalogIndex),
         ("cities/{city_id}.json", CityFile),
         ("changes.json", ChangesFile),
+        ("notices.json", NoticesFile),
     ):
         schema = model.model_json_schema(mode="serialization")
         parts.append(f"## `{title}`\n\n```json\n{json.dumps(schema, indent=2)}\n```\n")

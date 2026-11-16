@@ -11,6 +11,8 @@ import app.opennaksha.core.data.db.RecentEntity
 import app.opennaksha.core.data.db.SchemeEntity
 import app.opennaksha.core.data.db.UserDao
 import app.opennaksha.core.model.CatalogJson
+import app.opennaksha.core.model.Notice
+import app.opennaksha.core.model.NoticesFile
 import app.opennaksha.core.model.RunChanges
 import app.opennaksha.core.model.SchemeRecord
 import app.opennaksha.core.model.SchemeSummary
@@ -46,6 +48,8 @@ private object MetaKeys {
     const val SOURCE = "source"
     const val APP_VERSION = "latest_app_version"
     const val APP_URL = "latest_app_url"
+    /** The whole notices.json (small; avoids a schema migration for a separate table). */
+    const val NOTICES = "notices_json"
 }
 
 @Singleton
@@ -78,6 +82,12 @@ class CatalogRepository @Inject constructor(
 
     val runs: Flow<List<RunChanges>> = dao.observeRuns().map { list ->
         list.mapNotNull { runCatching { CatalogJson.decodeFromString(RunChanges.serializer(), it.json) }.getOrNull() }
+    }
+
+    /** Statewide notifications, newest first (empty until a catalog with notices.json is loaded). */
+    val notices: Flow<List<Notice>> = dao.observeMetaValue(MetaKeys.NOTICES).map { json ->
+        json?.let { runCatching { CatalogJson.decodeFromString(NoticesFile.serializer(), it).notices }.getOrNull() }
+            .orEmpty()
     }
 
     val meta: Flow<CatalogMeta> = dao.observeMeta().map { list ->
@@ -144,6 +154,10 @@ class CatalogRepository @Inject constructor(
                 MetaEntity(MetaKeys.SOURCE, source),
                 MetaEntity(MetaKeys.APP_VERSION, snapshot.index.latestAppVersion),
                 MetaEntity(MetaKeys.APP_URL, snapshot.index.latestAppUrl),
+            ) + listOfNotNull(
+                snapshot.notices?.let {
+                    MetaEntity(MetaKeys.NOTICES, CatalogJson.encodeToString(NoticesFile.serializer(), it))
+                },
             ),
         )
     }

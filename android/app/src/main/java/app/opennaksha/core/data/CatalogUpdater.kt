@@ -6,6 +6,7 @@ import app.opennaksha.core.model.CatalogIndex
 import app.opennaksha.core.model.CatalogJson
 import app.opennaksha.core.model.ChangesFile
 import app.opennaksha.core.model.CityFile
+import app.opennaksha.core.model.NoticesFile
 import app.opennaksha.core.model.SUPPORTED_SCHEMA_VERSION
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,6 +19,8 @@ data class CatalogSnapshot(
     val cities: List<CityFile>,
     /** null = keep the stored changes (changes.json missing or invalid). */
     val changes: ChangesFile?,
+    /** null = keep the stored notices (notices.json missing or invalid). */
+    val notices: NoticesFile? = null,
 )
 
 data class StoredMeta(val generatedAt: String?, val etag: String?, val lastModified: String?)
@@ -64,6 +67,12 @@ object CatalogParser {
         CatalogJson.decodeFromString(ChangesFile.serializer(), text)
             .takeIf { it.schemaVersion <= SUPPORTED_SCHEMA_VERSION }
     }.getOrNull()
+
+    /** Optional file: anything unreadable is ignored (null), never fails the update. */
+    fun notices(text: String): NoticesFile? = runCatching {
+        CatalogJson.decodeFromString(NoticesFile.serializer(), text)
+            .takeIf { it.schemaVersion <= SUPPORTED_SCHEMA_VERSION }
+    }.getOrNull()
 }
 
 /**
@@ -102,7 +111,8 @@ class CatalogUpdater(
                 CatalogParser.city(get(CatalogUrls.city(base, entry.id)), entry.id)
             }
             val changes = runCatching { CatalogParser.changes(get(CatalogUrls.changes(base))) }.getOrNull()
-            store.replace(CatalogSnapshot(index, cities, changes), etag, lastModified, source = "remote")
+            val notices = runCatching { CatalogParser.notices(get(CatalogUrls.notices(base))) }.getOrNull()
+            store.replace(CatalogSnapshot(index, cities, changes, notices), etag, lastModified, source = "remote")
             store.markChecked(clock())
             UpdateResult.Updated(index.generatedAt)
         } catch (e: Exception) {
@@ -137,7 +147,8 @@ class BundledCatalogLoader(private val readAsset: (String) -> String?) {
             CatalogParser.city(readAsset("catalog/cities/${e.id}.json") ?: error("missing ${e.id}"), e.id)
         }
         val changes = readAsset("catalog/changes.json")?.let(CatalogParser::changes)
-        CatalogSnapshot(index, cities, changes)
+        val notices = readAsset("catalog/notices.json")?.let(CatalogParser::notices)
+        CatalogSnapshot(index, cities, changes, notices)
     }.getOrNull()
 
     /** True when the bundle should replace stored data. */

@@ -15,6 +15,7 @@ from opennaksha.models import (
     ChangesFile,
     CityEntry,
     CityFile,
+    NoticesFile,
     RunChanges,
     SchemeRecord,
     StatusFile,
@@ -32,6 +33,7 @@ class PreviousCatalog:
     changes: ChangesFile = field(default_factory=ChangesFile)
     status: StatusFile = field(default_factory=StatusFile)
     index: CatalogIndex | None = None
+    notices: NoticesFile | None = None
 
     @property
     def is_first_run(self) -> bool:
@@ -57,6 +59,8 @@ def load_previous(folder: Path | None) -> PreviousCatalog:
         prev.changes = ChangesFile.model_validate_json((cat / "changes.json").read_bytes())
     if (cat / "status.json").exists():
         prev.status = StatusFile.model_validate_json((cat / "status.json").read_bytes())
+    if (cat / "notices.json").exists():
+        prev.notices = NoticesFile.model_validate_json((cat / "notices.json").read_bytes())
     return prev
 
 
@@ -95,8 +99,9 @@ def write_catalog(
     now: datetime,
     latest_app_version: str | None = None,
     latest_app_url: str | None = None,
+    notices: NoticesFile | None = None,
 ) -> CatalogIndex:
-    """Write index.json, cities/*.json, changes.json and status.json (compact JSON)."""
+    """Write index.json, cities/*.json, changes.json, status.json and notices.json (compact)."""
     cat = out / "catalog"
     cities_dir = cat / "cities"
     cities_dir.mkdir(parents=True, exist_ok=True)
@@ -117,6 +122,8 @@ def write_catalog(
     _write(cat / "index.json", index.model_dump_json())
     _write(cat / "changes.json", changes.model_dump_json())
     _write(cat / "status.json", status.model_dump_json())
+    if notices is not None:
+        _write(cat / "notices.json", notices.model_dump_json())
     return index
 
 

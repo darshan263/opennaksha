@@ -131,6 +131,14 @@ const S = [
   ['tools_converter', 'Land unit converter', 'જમીન માપ રૂપાંતર'],
   ['tools_anyror', 'AnyROR land records', 'AnyROR જમીન રેકર્ડ'],
   ['tools_anyror_desc', 'Official Gujarat land record portal (opens in browser)', 'ગુજરાતનું સત્તાવાર જમીન રેકર્ડ પોર્ટલ (બ્રાઉઝરમાં ખુલશે)'],
+  ['tools_notices', 'Govt. planning notifications', 'સરકારી આયોજન જાહેરનામાં'],
+  ['tools_notices_desc', 'TP and DP notifications from the state Town Planning department', 'રાજ્યના ટાઉન પ્લાનિંગ વિભાગના TP અને DP જાહેરનામાં'],
+  ['notices_title', 'Notifications', 'જાહેરનામાં'],
+  ['notices_empty', 'No notifications yet. Pull to refresh on Home to check for new data.', 'હજી કોઈ જાહેરનામાં નથી. નવો ડેટા તપાસવા હોમ પર નીચે ખેંચો.'],
+  ['notices_filter_all', 'All', 'બધા'],
+  ['notices_filter_other', 'Other', 'અન્ય'],
+  ['notices_source', 'Source: Town Planning & Valuation Department, Gujarat. Tap a notification to open its PDF.', 'સ્ત્રોત: ટાઉન પ્લાનિંગ અને વેલ્યુએશન વિભાગ, ગુજરાત. PDF ખોલવા જાહેરનામા પર ટેપ કરો.'],
+  ['notices_open_source', 'Open source page', 'સ્ત્રોત પેજ ખોલો'],
   ['converter_value', 'Area', 'ક્ષેત્રફળ'],
   ['converter_from', 'Unit', 'એકમ'],
   ['converter_note', 'Values used: 1 vaar = 1 sq yard = 0.8361 m²; 1 guntha = 121 sq yards = 101.17 m²; 1 vigha = 16 guntha = 17,424 sq ft = 1,618.74 m²; 1 acre = 40 guntha = 4,046.86 m²; 1 hectare = 10,000 m². The size of a vigha (bigha) varies by region in Gujarat — confirm the local value before relying on it.', 'વપરાયેલ મૂલ્યો: 1 વાર = 1 ચો. યાર્ડ = 0.8361 m²; 1 ગુંઠા = 121 ચો. વાર = 101.17 m²; 1 વીઘા = 16 ગુંઠા = 17,424 ચો. ફૂટ = 1,618.74 m²; 1 એકર = 40 ગુંઠા = 4,046.86 m²; 1 હેક્ટર = 10,000 m². ગુજરાતમાં વીઘાનું માપ પ્રદેશ પ્રમાણે બદલાય છે — ઉપયોગ કરતા પહેલાં સ્થાનિક મૂલ્ય ચકાસો.'],
@@ -154,6 +162,7 @@ const S = [
 const P = [
   ['city_scheme_count', { one: '%d scheme', other: '%d schemes' }, { one: '%d સ્કીમ', other: '%d સ્કીમ' }],
   ['news_new', { one: '%1$d new map in %2$s', other: '%1$d new maps in %2$s' }, { one: '%2$s માં %1$d નવો નકશો', other: '%2$s માં %1$d નવા નકશા' }],
+  ['notices_new_count', { one: '%1$d new', other: '%1$d new' }, { one: '%1$d નવું', other: '%1$d નવા' }],
   ['news_updated', { one: '%1$d map updated in %2$s', other: '%1$d maps updated in %2$s' }, { one: '%2$s માં %1$d નકશો અપડેટ થયો', other: '%2$s માં %1$d નકશા અપડેટ થયા' }],
 ];
 

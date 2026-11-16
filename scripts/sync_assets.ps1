@@ -1,6 +1,7 @@
 # Copies the latest catalog into the Android app's assets (the offline fallback bundled in the APK).
 #
-# 1. If a catalog base URL is configured, download index.json, changes.json and every city file.
+# 1. If a catalog base URL is configured, download index.json, changes.json, notices.json
+#    and every city file.
 # 2. Otherwise (or if the download fails) copy from pipeline\output\catalog\.
 # 3. If neither is available, keep whatever is already in the assets folder.
 #
@@ -28,6 +29,9 @@ function Sync-Remote {
         Invoke-WebRequest -UseBasicParsing -TimeoutSec 60 -Uri "$base/catalog/index.json" -OutFile (Join-Path $tmp 'index.json')
         try {
             Invoke-WebRequest -UseBasicParsing -TimeoutSec 60 -Uri "$base/catalog/changes.json" -OutFile (Join-Path $tmp 'changes.json')
+        } catch { }
+        try {
+            Invoke-WebRequest -UseBasicParsing -TimeoutSec 60 -Uri "$base/catalog/notices.json" -OutFile (Join-Path $tmp 'notices.json')
         } catch { }
         $index = Get-Content -Raw (Join-Path $tmp 'index.json') | ConvertFrom-Json
         foreach ($city in $index.cities) {

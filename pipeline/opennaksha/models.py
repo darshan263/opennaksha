@@ -191,3 +191,30 @@ def owner_key(city_id: str, authority: str, scheme_type: str) -> str:
 def source_id(city_id: str, authority: str) -> str:
     """Identifier for one scraper/source, e.g. ``surat-smc``."""
     return f"{city_id}-{authority}".lower()
+
+
+# --------------------------------------------------------------------------- notices
+
+NoticeKind = Literal["TP", "DP", "other"]
+_Date = date  # the Notice field is called "date"
+
+
+class Notice(_Model):
+    """One statewide notification (TPVD, docs/sources.md §9.1). Published in notices.json."""
+
+    id: str  # the source's file GUID (stable across runs)
+    date: _Date | None = None
+    kind: NoticeKind = "other"
+    title: str
+    description: str | None = None
+    reference_no: str | None = None
+    branch: str | None = None
+    url: str
+    first_seen: datetime
+
+
+class NoticesFile(_Model):
+    schema_version: int = SCHEMA_VERSION
+    generated_at: datetime
+    source_page_url: str
+    notices: list[Notice] = Field(default_factory=list)

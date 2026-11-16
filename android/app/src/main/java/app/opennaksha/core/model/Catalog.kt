@@ -128,3 +128,27 @@ object SchemeStatus {
 object SchemeTypes {
     val ALL = listOf("TP", "DP", "LAP", "VILLAGE")
 }
+
+/** Statewide planning notifications (TPVD), catalog/notices.json. Optional: may be absent. */
+@Serializable
+data class NoticesFile(
+    @SerialName("schema_version") val schemaVersion: Int = 1,
+    @SerialName("generated_at") val generatedAt: String,
+    @SerialName("source_page_url") val sourcePageUrl: String? = null,
+    val notices: List<Notice> = emptyList(),
+)
+
+@Serializable
+data class Notice(
+    val id: String,
+    /** yyyy-mm-dd, or null when the source row has no date. */
+    val date: String? = null,
+    /** "TP", "DP" or "other" (derived from the title by the pipeline). */
+    val kind: String = "other",
+    val title: String,
+    val description: String? = null,
+    @SerialName("reference_no") val referenceNo: String? = null,
+    val branch: String? = null,
+    val url: String,
+    @SerialName("first_seen") val firstSeen: String,
+)

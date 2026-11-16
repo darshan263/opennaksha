@@ -21,6 +21,8 @@ CITIES: dict[str, City] = {
         City("bhavnagar", "Bhavnagar", "ભાવનગર"),
         City("jamnagar", "Jamnagar", "જામનગર"),
         City("junagadh", "Junagadh", "જૂનાગઢ"),
+        City("dholera", "Dholera", "ધોલેરા"),
+        City("navsari", "Navsari", "નવસારી"),
     ]
 }
 

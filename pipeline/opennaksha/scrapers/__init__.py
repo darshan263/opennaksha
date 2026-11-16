@@ -12,7 +12,9 @@ def all_scrapers() -> list[type[BaseScraper]]:
     from opennaksha.scrapers.ahmedabad_amc import AhmedabadAMC
     from opennaksha.scrapers.ahmedabad_auda import AhmedabadAUDA
     from opennaksha.scrapers.ahmedabad_auda_dp import AhmedabadAUDADP
+    from opennaksha.scrapers.dholera_dsirda import DholeraDSIRDA
     from opennaksha.scrapers.gandhinagar_guda import GandhinagarGUDA, GandhinagarGUDADP
+    from opennaksha.scrapers.navsari_nmc import NavsariNMC
     from opennaksha.scrapers.rajkot_ruda import RajkotRUDA
     from opennaksha.scrapers.rajkot_ruda_dp import RajkotRUDADP
     from opennaksha.scrapers.surat_smc import SuratSMC
@@ -36,6 +38,9 @@ def all_scrapers() -> list[type[BaseScraper]]:
         AhmedabadAUDADP,
         RajkotRUDADP,
         GandhinagarGUDADP,
+        # TP schemes and DP from one site
+        DholeraDSIRDA,
+        NavsariNMC,
         # Village maps
         VadodaraVUDAVillages,
         SuratSMCVillage,

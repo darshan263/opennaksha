@@ -154,3 +154,26 @@ def test_scraper_returning_foreign_records_fails(tmp_path):
     with mock_client(FakeFiles({})) as client:
         r = run(args(tmp_path, "x"), [Bad], client)
     assert "surat-smc" in r.failed_sources
+
+
+def test_notices_fetched_with_source_flag_and_kept_when_not_run(tmp_path):
+    from pathlib import Path
+
+    html = (Path(__file__).parent.parent / "fixtures/tpvd/ecitizen_notifications.html").read_bytes()
+    files = dict(FILES)
+    files["https://townplanning.gujarat.gov.in/ecitizen/Notifications"] = html
+    fake = FakeFiles(files)
+    FakeSurat.fail = False
+    with mock_client(fake) as client:
+        run(args(tmp_path, "a"), [FakeSurat], client)
+        assert not (tmp_path / "a/catalog/notices.json").exists()  # injected scrapers: no notices
+        r = run(args(tmp_path, "b", "a", "--source", "state-tpvd-notices"), [FakeSurat], client)
+        assert "state-tpvd-notices" in r.succeeded_sources
+        assert r.should_commit  # first notices.json
+        notices = json.loads((tmp_path / "b/catalog/notices.json").read_text(encoding="utf-8"))
+        assert len(notices["notices"]) == 107
+        # A run that doesn't fetch notices still publishes the previous file unchanged.
+        run(args(tmp_path, "c", "b"), [FakeSurat], client)
+        assert (tmp_path / "c/catalog/notices.json").read_bytes() == (
+            tmp_path / "b/catalog/notices.json"
+        ).read_bytes()

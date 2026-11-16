@@ -26,5 +26,7 @@ object CatalogUrls {
 
     fun changes(base: String) = "${base.trimEnd('/')}/catalog/changes.json"
 
+    fun notices(base: String) = "${base.trimEnd('/')}/catalog/notices.json"
+
     fun overlay(base: String, schemeId: String) = "${base.trimEnd('/')}/overlays/$schemeId.png"
 }
